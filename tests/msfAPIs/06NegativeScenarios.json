@@ -1,0 +1,1431 @@
+{
+    "environmentData": "./tests/msfAPIs/config/msf_api.postman_environment.json",
+    "collectionFile": "./tests/msfAPIs/config/msfAPI.postman_collection.json",
+    "groups": 
+    [
+        {
+        "groupName": "Negative Scenarios",
+        "groupDescription":"Verifying all the negative scenarios",
+        "groupType": "sequential",
+        "tests": 
+        [
+            {
+                "testName": "Verify Create Cluster with Blank ClusterName",
+                "testDescription":"Verify Create Cluster with Blank ClusterName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Create Cluster with Blank ClusterName",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "nodetype": {
+                        "value": [
+                
+                            {
+                                "name": "frontend",
+                                "nodedurabilityLevel": "Bronze",
+                                "instanceCount": 5,
+                                "size": "Standard_D1_v2",
+                                "scalein": 30,
+                                "scaleOut": 60,
+                                "maxNode": 10,
+                                "minNode": 5,
+                                "isPrimaryNode": "true",
+                                "subnetName": "msf-dev1-snet-frontend-tier",
+                                "placement": "frontend",
+                                "subnetprefix":"10.42.5.0/24",
+                                "lbtype": "public"
+                            }
+                
+                
+                        ]
+                    },
+                    "clusterName": {
+                        "value": ""
+                    },
+                    "clusterLocation": {
+                        "value": "West Europe"
+                    },
+                    "certificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "sourceVaultvalue": {
+                        "value": "/subscriptions/606326bf-dee8-4dc0-8335-52511614e9cf/resourceGroups/msf-dev1-d-rsg-keyvault/providers/Microsoft.KeyVault/vaults/msfkeyvault"
+                    },
+                    "certificateUrlvalue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfClusterCert/b35126b7f4f64f1695e99355042415f7"
+                    },
+                    "dnsName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "vmImageSku": {
+                        "value": "2012-R2-Datacenter"
+                    },
+                    "storageAccountType": {
+                        "value": "Standard_LRS"
+                    },
+                    "sfReverseProxyCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sfReverseProxyCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "reliabilityLevel": {
+                        "Value": "silver"
+                    },
+                    "sslCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sslCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    }
+                }
+            },
+
+            {
+                "testName": "Verify Create Cluster with one char ClusterName",
+                "testDescription":"Verify Create Cluster with one char ClusterName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Create Cluster with Invalid ClusterName",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "nodetype": {
+                        "value": [
+                
+                            {
+                                "name": "frontend",
+                                "nodedurabilityLevel": "Bronze",
+                                "instanceCount": 5,
+                                "size": "Standard_D1_v2",
+                                "scalein": 30,
+                                "scaleOut": 60,
+                                "maxNode": 10,
+                                "minNode": 5,
+                                "isPrimaryNode": "true",
+                                "subnetName": "msf-dev1-snet-frontend-tier",
+                                "placement": "frontend",
+                                "subnetprefix":"10.42.5.0/24",
+                                "lbtype": "public"
+                            }
+                
+                
+                        ]
+                    },
+                    "clusterName": {
+                        "value": "a"
+                    },
+                    "clusterLocation": {
+                        "value": "West Europe"
+                    },
+                    "certificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "sourceVaultvalue": {
+                        "value": "/subscriptions/606326bf-dee8-4dc0-8335-52511614e9cf/resourceGroups/msf-dev1-d-rsg-keyvault/providers/Microsoft.KeyVault/vaults/msfkeyvault"
+                    },
+                    "certificateUrlvalue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfClusterCert/b35126b7f4f64f1695e99355042415f7"
+                    },
+                    "dnsName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "vmImageSku": {
+                        "value": "2012-R2-Datacenter"
+                    },
+                    "storageAccountType": {
+                        "value": "Standard_LRS"
+                    },
+                    "sfReverseProxyCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sfReverseProxyCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "reliabilityLevel": {
+                        "Value": "silver"
+                    },
+                    "sslCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sslCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    }
+                }
+            },
+            
+            {
+                "testName": "Verify Create Cluster with 24 char ClusterName",
+                "testDescription":"Verify Create Cluster with 24 char ClusterName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Create Cluster with Invalid ClusterName",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "nodetype": {
+                        "value": [
+                
+                            {
+                                "name": "frontend",
+                                "nodedurabilityLevel": "Bronze",
+                                "instanceCount": 5,
+                                "size": "Standard_D1_v2",
+                                "scalein": 30,
+                                "scaleOut": 60,
+                                "maxNode": 10,
+                                "minNode": 5,
+                                "isPrimaryNode": "true",
+                                "subnetName": "msf-dev1-snet-frontend-tier",
+                                "placement": "frontend",
+                                "subnetprefix":"10.42.5.0/24",
+                                "lbtype": "public"
+                            }
+                
+                
+                        ]
+                    },
+                    "clusterName": {
+                        "value": "atosatosatosatos12345678"
+                    },
+                    "clusterLocation": {
+                        "value": "West Europe"
+                    },
+                    "certificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "sourceVaultvalue": {
+                        "value": "/subscriptions/606326bf-dee8-4dc0-8335-52511614e9cf/resourceGroups/msf-dev1-d-rsg-keyvault/providers/Microsoft.KeyVault/vaults/msfkeyvault"
+                    },
+                    "certificateUrlvalue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfClusterCert/b35126b7f4f64f1695e99355042415f7"
+                    },
+                    "dnsName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "vmImageSku": {
+                        "value": "2012-R2-Datacenter"
+                    },
+                    "storageAccountType": {
+                        "value": "Standard_LRS"
+                    },
+                    "sfReverseProxyCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sfReverseProxyCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "reliabilityLevel": {
+                        "Value": "silver"
+                    },
+                    "sslCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sslCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    }
+                }
+            },
+
+            {
+                "testName": "Verify Create Cluster with Capital char ClusterName",
+                "testDescription":"Verify Create Cluster with Capital char ClusterName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Create Cluster with Invalid ClusterName",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "nodetype": {
+                        "value": [
+                
+                            {
+                                "name": "frontend",
+                                "nodedurabilityLevel": "Bronze",
+                                "instanceCount": 5,
+                                "size": "Standard_D1_v2",
+                                "scalein": 30,
+                                "scaleOut": 60,
+                                "maxNode": 10,
+                                "minNode": 5,
+                                "isPrimaryNode": "true",
+                                "subnetName": "msf-dev1-snet-frontend-tier",
+                                "placement": "frontend",
+                                "subnetprefix":"10.42.5.0/24",
+                                "lbtype": "public"
+                            }
+                
+                
+                        ]
+                    },
+                    "clusterName": {
+                        "value": "Test123"
+                    },
+                    "clusterLocation": {
+                        "value": "West Europe"
+                    },
+                    "certificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "sourceVaultvalue": {
+                        "value": "/subscriptions/606326bf-dee8-4dc0-8335-52511614e9cf/resourceGroups/msf-dev1-d-rsg-keyvault/providers/Microsoft.KeyVault/vaults/msfkeyvault"
+                    },
+                    "certificateUrlvalue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfClusterCert/b35126b7f4f64f1695e99355042415f7"
+                    },
+                    "dnsName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "vmImageSku": {
+                        "value": "2012-R2-Datacenter"
+                    },
+                    "storageAccountType": {
+                        "value": "Standard_LRS"
+                    },
+                    "sfReverseProxyCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sfReverseProxyCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "reliabilityLevel": {
+                        "Value": "silver"
+                    },
+                    "sslCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sslCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    }
+                }
+            },
+
+            {
+                "testName": "Verify Create Cluster with Special char ClusterName",
+                "testDescription":"Verify Create Cluster with Special char ClusterName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Create Cluster with Invalid ClusterName",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "nodetype": {
+                        "value": [
+                
+                            {
+                                "name": "frontend",
+                                "nodedurabilityLevel": "Bronze",
+                                "instanceCount": 5,
+                                "size": "Standard_D1_v2",
+                                "scalein": 30,
+                                "scaleOut": 60,
+                                "maxNode": 10,
+                                "minNode": 5,
+                                "isPrimaryNode": "true",
+                                "subnetName": "msf-dev1-snet-frontend-tier",
+                                "placement": "frontend",
+                                "subnetprefix":"10.42.5.0/24",
+                                "lbtype": "public"
+                            }
+                
+                
+                        ]
+                    },
+                    "clusterName": {
+                        "value": "test$123"
+                    },
+                    "clusterLocation": {
+                        "value": "West Europe"
+                    },
+                    "certificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "sourceVaultvalue": {
+                        "value": "/subscriptions/606326bf-dee8-4dc0-8335-52511614e9cf/resourceGroups/msf-dev1-d-rsg-keyvault/providers/Microsoft.KeyVault/vaults/msfkeyvault"
+                    },
+                    "certificateUrlvalue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfClusterCert/b35126b7f4f64f1695e99355042415f7"
+                    },
+                    "dnsName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "vmImageSku": {
+                        "value": "2012-R2-Datacenter"
+                    },
+                    "storageAccountType": {
+                        "value": "Standard_LRS"
+                    },
+                    "sfReverseProxyCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sfReverseProxyCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "reliabilityLevel": {
+                        "Value": "silver"
+                    },
+                    "sslCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sslCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    }
+                }
+            },
+
+            {
+                "testName": "Verify Create Cluster with Existing ClusterName",
+                "testDescription":"Verify Create Cluster with Existing ClusterName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Create Cluster with Existing ClusterName",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "nodetype": {
+                        "value": [
+                
+                            {
+                                "name": "frontend",
+                                "nodedurabilityLevel": "Bronze",
+                                "instanceCount": 5,
+                                "size": "Standard_D1_v2",
+                                "scalein": 30,
+                                "scaleOut": 60,
+                                "maxNode": 10,
+                                "minNode": 5,
+                                "isPrimaryNode": "true",
+                                "subnetName": "msf-dev1-snet-frontend-tier",
+                                "placement": "frontend",
+                                "subnetprefix":"10.42.5.0/24",
+                                "lbtype": "public"
+                            }
+                
+                
+                        ]
+                    },
+                    "clusterName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "clusterLocation": {
+                        "value": "West Europe"
+                    },
+                    "certificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "sourceVaultvalue": {
+                        "value": "/subscriptions/606326bf-dee8-4dc0-8335-52511614e9cf/resourceGroups/msf-dev1-d-rsg-keyvault/providers/Microsoft.KeyVault/vaults/msfkeyvault"
+                    },
+                    "certificateUrlvalue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfClusterCert/b35126b7f4f64f1695e99355042415f7"
+                    },
+                    "dnsName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "vmImageSku": {
+                        "value": "2012-R2-Datacenter"
+                    },
+                    "storageAccountType": {
+                        "value": "Standard_LRS"
+                    },
+                    "sfReverseProxyCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sfReverseProxyCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "reliabilityLevel": {
+                        "Value": "silver"
+                    },
+                    "sslCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sslCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    }
+                }
+            },
+
+            {
+                "testName": "Verify Create Cluster with Blank clusterLocation",
+                "testDescription":"Verify Create Cluster with Blank clusterLocation",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Create Cluster with Blank clusterLocation",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "nodetype": {
+                        "value": [
+                
+                            {
+                                "name": "frontend",
+                                "nodedurabilityLevel": "Bronze",
+                                "instanceCount": 5,
+                                "size": "Standard_D1_v2",
+                                "scalein": 30,
+                                "scaleOut": 60,
+                                "maxNode": 10,
+                                "minNode": 5,
+                                "isPrimaryNode": "true",
+                                "subnetName": "msf-dev1-snet-frontend-tier",
+                                "placement": "frontend",
+                                "subnetprefix":"10.42.5.0/24",
+                                "lbtype": "public"
+                            }
+                
+                
+                        ]
+                    },
+                    "clusterName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "clusterLocation": {
+                        "value": ""
+                    },
+                    "certificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "sourceVaultvalue": {
+                        "value": "/subscriptions/606326bf-dee8-4dc0-8335-52511614e9cf/resourceGroups/msf-dev1-d-rsg-keyvault/providers/Microsoft.KeyVault/vaults/msfkeyvault"
+                    },
+                    "certificateUrlvalue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfClusterCert/b35126b7f4f64f1695e99355042415f7"
+                    },
+                    "dnsName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "vmImageSku": {
+                        "value": "2012-R2-Datacenter"
+                    },
+                    "storageAccountType": {
+                        "value": "Standard_LRS"
+                    },
+                    "sfReverseProxyCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sfReverseProxyCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "reliabilityLevel": {
+                        "Value": "silver"
+                    },
+                    "sslCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sslCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    }
+                }
+            },
+
+            {
+                "testName": "Verify Create Cluster with Blank dnsName",
+                "testDescription":"Verify Create Cluster with Blank dnsName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Create Cluster with Blank dnsName",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "nodetype": {
+                        "value": [
+                
+                            {
+                                "name": "frontend",
+                                "nodedurabilityLevel": "Bronze",
+                                "instanceCount": 5,
+                                "size": "Standard_D1_v2",
+                                "scalein": 30,
+                                "scaleOut": 60,
+                                "maxNode": 10,
+                                "minNode": 5,
+                                "isPrimaryNode": "true",
+                                "subnetName": "msf-dev1-snet-frontend-tier",
+                                "placement": "frontend",
+                                "subnetprefix":"10.42.5.0/24",
+                                "lbtype": "public"
+                            }
+                
+                
+                        ]
+                    },
+                    "clusterName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "clusterLocation": {
+                        "value": "West Europe"
+                    },
+                    "certificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "sourceVaultvalue": {
+                        "value": "/subscriptions/606326bf-dee8-4dc0-8335-52511614e9cf/resourceGroups/msf-dev1-d-rsg-keyvault/providers/Microsoft.KeyVault/vaults/msfkeyvault"
+                    },
+                    "certificateUrlvalue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfClusterCert/b35126b7f4f64f1695e99355042415f7"
+                    },
+                    "dnsName": {
+                        "value": ""
+                    },
+                    "vmImageSku": {
+                        "value": "2012-R2-Datacenter"
+                    },
+                    "storageAccountType": {
+                        "value": "Standard_LRS"
+                    },
+                    "sfReverseProxyCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sfReverseProxyCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "reliabilityLevel": {
+                        "Value": "silver"
+                    },
+                    "sslCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sslCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    }
+                }
+            },
+
+            {
+                "testName": "Verify Create Cluster with Blank vmImageSku",
+                "testDescription":"Verify Create Cluster with Blank vmImageSku",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Create Cluster with Blank vmImageSku",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "nodetype": {
+                        "value": [
+                
+                            {
+                                "name": "frontend",
+                                "nodedurabilityLevel": "Bronze",
+                                "instanceCount": 5,
+                                "size": "Standard_D1_v2",
+                                "scalein": 30,
+                                "scaleOut": 60,
+                                "maxNode": 10,
+                                "minNode": 5,
+                                "isPrimaryNode": "true",
+                                "subnetName": "msf-dev1-snet-frontend-tier",
+                                "placement": "frontend",
+                                "subnetprefix":"10.42.5.0/24",
+                                "lbtype": "public"
+                            }
+                
+                
+                        ]
+                    },
+                    "clusterName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "clusterLocation": {
+                        "value": "West Europe"
+                    },
+                    "certificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "sourceVaultvalue": {
+                        "value": "/subscriptions/606326bf-dee8-4dc0-8335-52511614e9cf/resourceGroups/msf-dev1-d-rsg-keyvault/providers/Microsoft.KeyVault/vaults/msfkeyvault"
+                    },
+                    "certificateUrlvalue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfClusterCert/b35126b7f4f64f1695e99355042415f7"
+                    },
+                    "dnsName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "vmImageSku": {
+                        "value": ""
+                    },
+                    "storageAccountType": {
+                        "value": "Standard_LRS"
+                    },
+                    "sfReverseProxyCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sfReverseProxyCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "reliabilityLevel": {
+                        "Value": "silver"
+                    },
+                    "sslCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sslCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    }
+                }
+            },
+
+            {
+                "testName": "Verify Create Cluster with Blank storageAccountType",
+                "testDescription":"Verify Create Cluster with Blank storageAccountType",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Create Cluster with Blank storageAccountType",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "nodetype": {
+                        "value": [
+                
+                            {
+                                "name": "frontend",
+                                "nodedurabilityLevel": "Bronze",
+                                "instanceCount": 5,
+                                "size": "Standard_D1_v2",
+                                "scalein": 30,
+                                "scaleOut": 60,
+                                "maxNode": 10,
+                                "minNode": 5,
+                                "isPrimaryNode": "true",
+                                "subnetName": "msf-dev1-snet-frontend-tier",
+                                "placement": "frontend",
+                                "subnetprefix":"10.42.5.0/24",
+                                "lbtype": "public"
+                            }
+                
+                
+                        ]
+                    },
+                    "clusterName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "clusterLocation": {
+                        "value": "West Europe"
+                    },
+                    "certificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "sourceVaultvalue": {
+                        "value": "/subscriptions/606326bf-dee8-4dc0-8335-52511614e9cf/resourceGroups/msf-dev1-d-rsg-keyvault/providers/Microsoft.KeyVault/vaults/msfkeyvault"
+                    },
+                    "certificateUrlvalue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfClusterCert/b35126b7f4f64f1695e99355042415f7"
+                    },
+                    "dnsName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "vmImageSku": {
+                        "value": "2012-R2-Datacenter"
+                    },
+                    "storageAccountType": {
+                        "value": ""
+                    },
+                    "sfReverseProxyCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sfReverseProxyCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "reliabilityLevel": {
+                        "Value": "silver"
+                    },
+                    "sslCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sslCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    }
+                }
+            },
+
+            {
+                "testName": "Verify Create Cluster with Blank reliabilityLevel",
+                "testDescription":"Verify Create Cluster with Blank reliabilityLevel",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Create Cluster with Blank reliabilityLevel",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "nodetype": {
+                        "value": [
+                
+                            {
+                                "name": "frontend",
+                                "nodedurabilityLevel": "Bronze",
+                                "instanceCount": 5,
+                                "size": "Standard_D1_v2",
+                                "scalein": 30,
+                                "scaleOut": 60,
+                                "maxNode": 10,
+                                "minNode": 5,
+                                "isPrimaryNode": "true",
+                                "subnetName": "msf-dev1-snet-frontend-tier",
+                                "placement": "frontend",
+                                "subnetprefix":"10.42.5.0/24",
+                                "lbtype": "public"
+                            }
+                
+                
+                        ]
+                    },
+                    "clusterName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "clusterLocation": {
+                        "value": "West Europe"
+                    },
+                    "certificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "sourceVaultvalue": {
+                        "value": "/subscriptions/606326bf-dee8-4dc0-8335-52511614e9cf/resourceGroups/msf-dev1-d-rsg-keyvault/providers/Microsoft.KeyVault/vaults/msfkeyvault"
+                    },
+                    "certificateUrlvalue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfClusterCert/b35126b7f4f64f1695e99355042415f7"
+                    },
+                    "dnsName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "vmImageSku": {
+                        "value": "2012-R2-Datacenter"
+                    },
+                    "storageAccountType": {
+                        "value": "Standard_LRS"
+                    },
+                    "sfReverseProxyCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sfReverseProxyCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "reliabilityLevel": {
+                        "Value": ""
+                    },
+                    "sslCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sslCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    }
+                }
+            },
+
+            {
+                "testName": "Verify Create Cluster with Blank Node Values",
+                "testDescription":"Verify Create Cluster with Blank Node Values",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Create Cluster with Blank Node Values",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "nodetype": {
+                        "value": [
+                
+                            {
+                                "name": "",
+                                "nodedurabilityLevel": "",
+                                "size": "",
+                                "isPrimaryNode": "",
+                                "subnetName": "",
+                                "placement": "",
+                                "subnetprefix":"",
+                                "lbtype": ""
+                            }
+                
+                
+                        ]
+                    },
+                    "clusterName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "clusterLocation": {
+                        "value": "West Europe"
+                    },
+                    "certificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "sourceVaultvalue": {
+                        "value": "/subscriptions/606326bf-dee8-4dc0-8335-52511614e9cf/resourceGroups/msf-dev1-d-rsg-keyvault/providers/Microsoft.KeyVault/vaults/msfkeyvault"
+                    },
+                    "certificateUrlvalue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfClusterCert/b35126b7f4f64f1695e99355042415f7"
+                    },
+                    "dnsName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "vmImageSku": {
+                        "value": "2012-R2-Datacenter"
+                    },
+                    "storageAccountType": {
+                        "value": "Standard_LRS"
+                    },
+                    "sfReverseProxyCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sfReverseProxyCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    },
+                    "reliabilityLevel": {
+                        "Value": "silver"
+                    },
+                    "sslCertificateUrlValue": {
+                        "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                    },
+                    "sslCertificateThumbprint": {
+                        "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                    }
+                }
+            },
+
+            {
+                "testName": "Verify Create Cluster with Blank Certificate Details",
+                "testDescription":"Verify Create Cluster with Blank Certificate Details",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Create Cluster with Blank Certificate Details",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "nodetype": {
+                        "value": [
+                
+                            {
+                                "name": "frontend",
+                                "nodedurabilityLevel": "Bronze",
+                                "instanceCount": 5,
+                                "size": "Standard_D1_v2",
+                                "scalein": 30,
+                                "scaleOut": 60,
+                                "maxNode": 10,
+                                "minNode": 5,
+                                "isPrimaryNode": "true",
+                                "subnetName": "msf-dev1-snet-frontend-tier",
+                                "placement": "frontend",
+                                "subnetprefix":"10.42.5.0/24",
+                                "lbtype": "public"
+                            }
+                
+                
+                        ]
+                    },
+                    "clusterName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "clusterLocation": {
+                        "value": "West Europe"
+                    },
+                    "certificateThumbprint": {
+                        "value": ""
+                    },
+                    "sourceVaultvalue": {
+                        "value": ""
+                    },
+                    "certificateUrlvalue": {
+                        "value": ""
+                    },
+                    "dnsName": {
+                        "value": "{{clusterName}}"
+                    },
+                    "vmImageSku": {
+                        "value": "2012-R2-Datacenter"
+                    },
+                    "storageAccountType": {
+                        "value": "Standard_LRS"
+                    },
+                    "sfReverseProxyCertificateUrlValue": {
+                        "value": ""
+                    },
+                    "sfReverseProxyCertificateThumbprint": {
+                        "value": ""
+                    },
+                    "reliabilityLevel": {
+                        "Value": "silver"
+                    },
+                    "sslCertificateUrlValue": {
+                        "value": ""
+                    },
+                    "sslCertificateThumbprint": {
+                        "value": ""
+                    }
+                }
+            },
+
+            {
+                "testName": "Verify Get-MSFClusterStatus with Blank ResourceGroup",
+                "testDescription":"Verify Get-MSFClusterStatus with Blank ResourceGroup",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Get-MSFClusterStatus with Blank ResourceGroup",
+                "testParameters":{"DeploymentId": "{{svDeploymentId}}"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Get-MSFClusterStatus with Invalid ResourceGroup",
+                "testDescription":"Verify Get-MSFClusterStatus with Invalid ResourceGroup",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Get-MSFClusterStatus with Invalid ResourceGroup",
+                "testParameters":{"InvalidResourceGroupName":"abcd","DeploymentId": "{{svDeploymentId}}"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Get-MSFClusterStatus with Blank DeploymentName",
+                "testDescription":"Verify Get-MSFClusterStatus with Blank DeploymentName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Get-MSFClusterStatus with Blank DeploymentName",
+                "testParameters":{"ResourceGroupName":"{{svResourceGroupName}}"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Get-MSFClusterStatus with Invalid DeploymentName",
+                "testDescription":"Verify Get-MSFClusterStatus with Invalid DeploymentName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Get-MSFClusterStatus with Invalid DeploymentName",
+                "testParameters":{"ResourceGroupName":"{{svResourceGroupName}}","InvalidDeploymentId": "abcd"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Get-MSFClusterStatus with Blank SubscriptionId",
+                "testDescription":"Verify Get-MSFClusterStatus with Blank SubscriptionId",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Get-MSFClusterStatus with Blank SubscriptionId",
+                "testParameters":{"ResourceGroupName":"{{svResourceGroupName}}","DeploymentId": "{{svDeploymentId}}"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Get-MSFClusterStatus with Invalid SubscriptionId",
+                "testDescription":"Verify Get-MSFClusterStatus with Invalid SubscriptionId",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Get-MSFClusterStatus with Invalid SubscriptionId",
+                "testParameters":{"ResourceGroupName":"{{svResourceGroupName}}","DeploymentId": "{{svDeploymentId}}","InvalidSubscriptionId": "abcd"},
+                "testURL": "",
+                "testBody": {}
+            },
+            
+            {
+                "testName": "Verify Add Port API with Blank CustomerSubscription",
+                "testDescription":"Add Port API with Blank CustomerSubscription",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Add Port with With Blank CustomerSubscription",
+                "testParameters":{"clusterName":"{{svclusterName1}}", "LBName":"{{svLBName}}"},
+                "testURL": "",
+                "testBody": {
+                                "CustomerSubscription": "",
+					            "LBName": "{{LBName}}",
+                                "clusterName": "{{clusterName}}",
+                                "AddPorts": "tcp-3389",
+                                "RemovePorts": "",
+                                "RequesterName": "Test"
+                            }
+            },
+
+            {
+                "testName": "Verify Add Port API with Blank LBName",
+                "testDescription":"Add Port API with Blank LBName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Add Port with With Blank LBName",
+                "testParameters":{"clusterName":"{{svclusterName1}}", "LBName":"{{svLBName}}"},
+                "testURL": "",
+                "testBody": {
+                                "CustomerSubscription": "{{subscriptionid}}",
+					            "LBName": "",
+                                "clusterName": "{{clusterName}}",
+                                "AddPorts": "tcp-3389",
+                                "RemovePorts": "",
+                                "RequesterName": "Test"
+                            }
+            },
+
+            {
+                "testName": "Verify Add Port API with Blank ClusterName",
+                "testDescription":"Add Port API with Blank ClusterName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Add Port with With Blank ClusterName",
+                "testParameters":{"clusterName":"{{svclusterName1}}", "LBName":"{{svLBName}}"},
+                "testURL": "",
+                "testBody": {
+                                "CustomerSubscription": "{{subscriptionid}}",
+					            "LBName": "{{LBName}}",
+                                "clusterName": "",
+                                "AddPorts": "tcp-3389",
+                                "RemovePorts": "",
+                                "RequesterName": "Test"
+                            }
+            },
+
+            {
+                "testName": "Verify Add Port API with Invalid CustomerSubscription",
+                "testDescription":"Add Port API with Invalid CustomerSubscription",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Add Port with With Invalid CustomerSubscription",
+                "testParameters":{"clusterName":"{{svclusterName1}}", "LBName":"{{svLBName}}"},
+                "testURL": "",
+                "testBody": {
+                                "CustomerSubscription": "abcd",
+					            "LBName": "{{LBName}}",
+                                "clusterName": "{{clusterName}}",
+                                "AddPorts": "tcp-3389",
+                                "RemovePorts": "",
+                                "RequesterName": "Test"
+                            }
+            },
+
+            {
+                "testName": "Verify Add Port API with Invalid LBName",
+                "testDescription":"Add Port API with Invalid LBName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Add Port with With Invalid LBName",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                                "CustomerSubscription": "{{subscriptionid}}",
+					            "LBName": "abcd",
+                                "clusterName": "{{clusterName}}",
+                                "AddPorts": "tcp-3389",
+                                "RemovePorts": "",
+                                "RequesterName": "Test"
+                            }
+            },
+
+            {
+                "testName": "Verify Add Port API with Invalid ClusterName",
+                "testDescription":"Add Port API with Invalid ClusterName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Add Port with With Invalid ClusterName",
+                "testParameters":{"LBName":"{{svLBName}}"},
+                "testURL": "",
+                "testBody": {
+                        "CustomerSubscription": "{{subscriptionid}}",
+					    "LBName": "{{LBName}}",
+                        "clusterName": "atos-rg-t",
+                        "AddPorts": "tcp-3389",
+                        "RemovePorts": "",
+                        "RequesterName": "Test"
+                }
+            },
+
+            {
+                "testName": "Verify Remove Port API with Blank CustomerSubscription",
+                "testDescription":"Removing the Port with Blank CustomerSubscription",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Remove Port API with Blank CustomerSubscription",
+                "testParameters":{"clusterName":"{{svclusterName1}}", "LBName":"{{svLBName}}", "RemovePort":"tcp-3389"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Remove Port API with Blank LBName",
+                "testDescription":"Removing the Port with Blank LBName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Remove Port API with Blank LBName",
+                "testParameters":{"clusterName":"{{svclusterName1}}", "RemovePort":"tcp-3389"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Remove Port API with Blank ClusterName",
+                "testDescription":"Removing the port with Blank ClusterName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Remove Port API with Blank ClusterName",
+                "testParameters":{"LBName":"{{svLBName}}", "RemovePort":"tcp-3389"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Remove Port API with Blank RemovePorts",
+                "testDescription":"Removing the Port with Blank RemovePorts",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Remove Port API with Blank RemovePorts",
+                "testParameters":{"clusterName":"{{svclusterName1}}", "LBName":"{{svLBName}}"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Remove Port API with Invalid CustomerSubscription",
+                "testDescription":"Removing the port with Invalid CustomerSubscription",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Remove Port API with Invalid CustomerSubscription",
+                "testParameters":{"InvalidCustomerSubscription": "abcd", "clusterName":"{{svclusterName1}}", "LBName":"{{svLBName}}", "RemovePort":"tcp-3389"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Remove Port API with Invalid LBName",
+                "testDescription":"Removing the port with Invalid LBName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Remove Port API with Invalid LBName",
+                "testParameters":{"clusterName":"{{svclusterName1}}", "InvalidLBName":"abcd", "RemovePort":"tcp-3389"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Remove Port API with Invalid ClusterName",
+                "testDescription":"Removing the port with Invalid ClusterName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Remove Port API with Invalid ClusterName",
+                "testParameters":{"InvalidClusterName":"abcd", "LBName":"{{svLBName}}", "RemovePort":"tcp-3389"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Get Token URL with Blank GrantType",
+                "testDescription":"Verify Get Token URL with Blank GrantType",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Get Token URL with Blank GrantType",
+                "testParameters":{},
+                "testURL": "",
+                "testBody": {}
+            },
+
+           {
+                "testName": "Verify Get Token URL with Blank Username",
+                "testDescription":"Verify Get Token URL with Blank Username",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Get Token URL with Blank Username",
+                "testParameters":{},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Get Token URL with Invalid Username",
+                "testDescription":"Verify Get Token URL with Invalid Username",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Get Token URL with Invalid Username",
+                "testParameters":{},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Get Token URL with Blank password",
+                "testDescription":"Verify Get Token URL with Blank password",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Get Token URL with Blank password",
+                "testParameters":{},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Get Token URL with Invalid password",
+                "testDescription":"Verify Get Token URL with Invalid password",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Get Token URL with Invalid password",
+                "testParameters":{},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Get Token URL with Blank clientId",
+                "testDescription":"Verify Get Token URL with Blank clientId",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Get Token URL with Blank clientId",
+                "testParameters":{},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Get Token URL with Invalid clientId",
+                "testDescription":"Verify Get Token URL with Invalid clientId",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Get Token URL with Invalid clientId",
+                "testParameters":{},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Get Token URL with Blank Resource",
+                "testDescription":"Verify Get Token URL with Blank Resource",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Get Token URL with Blank Resource",
+                "testParameters":{},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Get Token URL with Invalid Resource",
+                "testDescription":"Verify Get Token URL with Invalid Resource",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Get Token URL with Invalid Resource",
+                "testParameters":{},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Add User to SF URL with Blank ClusterName",
+                "testDescription":"Verify Add User to SF URL with Blank ClusterName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Add User to SF URL with Blank ClusterName",
+                "testParameters":{"token":"{{svtoken}}"},
+                "testURL": "",
+                "testBody": {
+                    "clustername": "",
+                    "useremail":"automationacc@atosmsf.onmicrosoft.com",
+                    "isAdmin": "false"
+                }
+            },
+
+           {
+                "testName": "Verify Add User to SF URL with Invalid ClusterName",
+                "testDescription":"Verify Add User to SF URL with Invalid ClusterName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Add User to SF URL with Invalid ClusterName",
+                "testParameters":{"token":"{{svtoken}}"},
+                "testURL": "",
+                "testBody": {
+                    "clustername": "abcd",
+                    "useremail":"automationacc@atosmsf.onmicrosoft.com",
+                    "isAdmin": "false"
+                }
+            },
+
+            {
+                "testName": "Verify Add User to SF URL with Blank Useremail",
+                "testDescription":"Verify Add User to SF URL with Blank Useremail",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Add User to SF URL with Blank Useremail",
+                "testParameters":{"token":"{{svtoken}}", "clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "clustername": "{{clusterName}}",
+                    "useremail":"",
+                    "isAdmin": "false"
+                }
+            },
+
+            {
+                "testName": "Verify Add User to SF URL with Invalid Useremail",
+                "testDescription":"Verify Add User to SF URL with Invalid Useremail",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Add User to SF URL with Invalid Useremail",
+                "testParameters":{"token":"{{svtoken}}", "clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "clustername": "{{clusterName}}",
+                    "useremail":"automationacc123@atosmsf.onmicrosoft.com",
+                    "isAdmin": "false"
+                }
+            },
+
+            {
+                "testName": "Verify Add User to SF URL with Blank IsAdmin",
+                "testDescription":"Verify Add User to SF URL with Blank IsAdmin",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Add User to SF URL with Blank IsAdmin",
+                "testParameters":{"token":"{{svtoken}}", "clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "clustername": "{{clusterName}}",
+                    "useremail":"automationacc@atosmsf.onmicrosoft.com",
+                    "isAdmin": ""
+                }
+            },
+
+            {
+                "testName": "Verify Add User to SF URL with Present User",
+                "testDescription":"Verify Add User to SF URL with Present User",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Verify Add User to SF URL with Present User",
+                "testParameters":{"token":"{{svtoken}}", "clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "clustername": "{{clusterName}}",
+                    "useremail":"automationacc@atosmsf.onmicrosoft.com",
+                    "isAdmin": "false"
+                }
+            },
+
+            {
+                "testName": "Verify Delete Cluster API with blank CustomerSubscription",
+                "testDescription":"Verify Delete Cluster with Blank Customer Subscription",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Delete Cluster with Blank Customer Subscription",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Delete Cluster API with Invalid CustomerSubscription",
+                "testDescription":"Verify Delete Cluster with Invalid Customer Subscription",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Delete Cluster with Invalid Customer Subscription",
+                "testParameters":{"clusterName":"{{svclusterName1}}", "InvalidCustomerSubscription": "abcd"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Delete Cluster API with blank CustomerTenantId",
+                "testDescription":"Verify Delete Cluster with Balnk Customer TenantId",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Delete Cluster with Balnk Customer TenantId",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Delete Cluster API with Invalid CustomerTenantId",
+                "testDescription":"Verify Delete Cluster with Invalid Customer TenantId",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Delete Cluster with Invalid Customer TenantId",
+                "testParameters":{"clusterName":"{{svclusterName1}}", "InvalidCustomerTenantId": "abcd"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Delete Cluster API with blank clusterName",
+                "testDescription":"Verify Delete Cluster with Blank ClusterName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Delete Cluster with Blank ClusterName",
+                "testParameters":{},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Delete Cluster API with Invalid clusterName",
+                "testDescription":"Verify Delete Cluster with Invalid ClusterName",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Delete Cluster with Invalid ClusterName",
+                "testParameters":{"InvalidclusterName": "abcd"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Delete Cluster Status with Blank JobId",
+                "testDescription":"Verify Delete Cluster Status with Blank JobId",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Get-Delete Cluster Status with Blank JobId",
+                "testParameters":{},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Delete Cluster Status with Invalid JobId",
+                "testDescription":"Verify Delete Cluster Status with Invalid JobId",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Get-Delete Cluster Status with Invalid JobId",
+                "testParameters":{"InvalidJobId": "abcd"},
+                "testURL": "",
+                "testBody": {}
+            }
+        ]
+        }
+    ]
+}

@@ -1,0 +1,29 @@
+{
+    "environmentData": "./tests/msfAPIs/config/msf_api.postman_environment.json",
+    "collectionFile": "./tests/msfAPIs/config/msfAPI.postman_collection.json",
+    "groups": 
+    [
+        {
+        "groupName": "RBAC",
+        "groupDescription":"Generating the token and providing access to the user",
+        "groupType": "sequential",
+        "tests": 
+        [
+            
+            {
+                "testName": "Verify RBAC",
+                "testDescription":"Getting token",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "RBAC",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {
+                    "clustername": "{{clusterName}}",
+                    "useremail":"automationacc@atosmsf.onmicrosoft.com",
+                    "isAdmin": "false"
+                }
+            }
+        ]
+        }
+    ]
+}

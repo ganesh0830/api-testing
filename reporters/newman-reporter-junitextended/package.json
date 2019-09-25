@@ -1,0 +1,11 @@
+{
+  "name": "newman-reporter-junitextended",
+  "version": "1.0.0",
+  "description": "Newman Reporter for Junit Files",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ganesh Ransarje",
+  "license": "Apache-2.0"
+}

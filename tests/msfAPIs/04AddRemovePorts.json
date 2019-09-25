@@ -1,0 +1,69 @@
+{
+    "environmentData": "./tests/msfAPIs/config/msf_api.postman_environment.json",
+    "collectionFile": "./tests/msfAPIs/config/msfAPI.postman_collection.json",
+    "groups": 
+    [
+        {
+        "groupName": "Add/Remove Ports",
+        "groupDescription":"Adding and Removing the ports",
+        "groupType": "sequential",
+        "tests": 
+        [
+            
+            {
+                "testName": "Verify Add Port API with Valid Add Port input",
+                "testDescription":"Adding the ports to cluster",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Add Ports",
+                "testParameters":{"clusterName":"{{svclusterName1}}", "LBName":"{{svLBName}}"},
+                "testURL": "",
+                "testBody": {
+                                "CustomerSubscription": "{{subscriptionid}}",
+					            "LBName": "{{LBName}}",
+                                "clusterName": "{{clusterName}}",
+                                "AddPorts": "tcp-3389",
+                                "RemovePorts": "",
+                                "RequesterName": "Test"
+                            }
+            },
+
+            {
+                "testName": "Verify Add Port API with Invalid Add Port",
+                "testDescription":"Adding the ports to cluster",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Add Existing Port",
+                "testParameters":{"clusterName":"{{svclusterName1}}", "LBName":"{{svLBName}}"},
+                "testURL": "",
+                "testBody": {
+                                "CustomerSubscription": "{{subscriptionid}}",
+					            "LBName": "{{LBName}}",
+                                "clusterName": "{{clusterName}}",
+                                "AddPorts": "tcp-3389",
+                                "RemovePorts": "",
+                                "RequesterName": "Test"
+                            }
+            },
+
+            {
+                "testName": "Verify Remove Port API with Valid Remove Port input",
+                "testDescription":"Removing the ports from cluster",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Remove Ports",
+                "testParameters":{"clusterName":"{{svclusterName1}}", "LBName":"{{svLBName}}", "RemovePort":"tcp-3389"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Remove Port API with Invalid inputs",
+                "testDescription":"Removing the ports from cluster",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Remove Non-existent Port",
+                "testParameters":{"clusterName":"{{svclusterName1}}", "LBName":"{{svLBName}}", "RemovePort":"tcp-3389"},
+                "testURL": "",
+                "testBody": {}
+            }
+        ]
+        }
+    ]
+}

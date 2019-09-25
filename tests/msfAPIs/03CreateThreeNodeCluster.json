@@ -1,0 +1,123 @@
+{
+    "environmentData": "./tests/msfAPIs/config/msf_api.postman_environment.json",
+    "collectionFile": "./tests/msfAPIs/config/msfAPI.postman_collection.json",
+    "groups": 
+    [
+        {
+            "groupName": "Creating Three node cluster",
+            "groupDescription":"Creating Three node cluster and getting status",
+            "groupType": "sequential",
+            "tests": 
+            [
+            
+                {
+                    "testName": "Verify Create Cluster with 3 node",
+                    "testDescription":"Creating the cluster with Three node",
+                    "testExpectedResult":"successful",
+                    "testCollectionFolder": "Create Three Node Cluster",
+                    "testURL": "",
+                    "testParameters":{"clusterName":"{{svclusterName3}}"},
+                    "testBody": {
+                        "nodetype": {
+                            "value": [
+                
+                                {
+                                    "name": "frontend",
+                                    "nodedurabilityLevel": "Bronze",
+                                    "instanceCount": 5,
+                                    "size": "Standard_D1_v2",
+                                    "scalein": 30,
+                                    "scaleOut": 60,
+                                    "maxNode": 10,
+                                    "minNode": 5,
+                                    "isPrimaryNode": "false",
+                                    "subnetName": "DEV-msf-Dev1-d-snet-frontend-tier",
+                                    "placement": "frontend",
+                                    "subnetprefix":"80.0.1.0/24",
+                                    "lbtype": "public"
+                                },
+                                {
+                                    "name": "backend",
+                                    "nodedurabilityLevel": "Bronze",
+                                    "instanceCount": 5,
+                                    "size": "Standard_D1_v2",
+                                    "scalein": 30,
+                                    "scaleOut": 60,
+                                    "maxNode": 10,
+                                    "minNode": 5,
+                                    "isPrimaryNode": "false",
+                                    "subnetName": "DEV-msf-Dev1-d-snet-middle-tier",
+                                    "placement": "middletier",
+                                    "subnetprefix":"80.0.2.0/24",
+                                    "lbtype": "public"
+                                },
+                                {
+                                    "name": "backend1",
+                                    "nodedurabilityLevel": "Bronze",
+                                    "instanceCount": 5,
+                                    "size": "Standard_D1_v2",
+                                    "scalein": 30,
+                                    "scaleOut": 60,
+                                    "maxNode": 10,
+                                    "minNode": 5,
+                                    "isPrimaryNode": "true",
+                                    "subnetName": "DEV-msf-Dev1-d-snet-middle-tier",
+                                    "placement": "middletier",
+                                    "subnetprefix":"80.0.2.0/24",
+                                    "lbtype": "public"
+                                }
+                    
+                    
+                            ]
+                        },
+                        "clusterName": {
+                            "value": "{{clusterName}}"
+                        },
+                        "clusterLocation": {
+                            "value": "West Europe"
+                        },
+                        "certificateThumbprint": {
+                            "value": "9A7FC878D747832893287B31561EEE1699F199A9"
+                        },
+                        "sourceVaultvalue": {
+                            "value": "/subscriptions/606326bf-dee8-4dc0-8335-52511614e9cf/resourceGroups/msf-dev1-d-rsg-keyvault/providers/Microsoft.KeyVault/vaults/msfkeyvault"
+                        },
+                        "certificateUrlvalue": {
+                            "value": "https://msfkeyvault.vault.azure.net/secrets/MsfClusterCert/b35126b7f4f64f1695e99355042415f7"
+                        },
+                        "dnsName": {
+                            "value": "{{clusterName}}"
+                        },
+                        "vmImageSku": {
+                            "value": "2016-Datacenter"
+                        },
+                        "storageAccountType": {
+                            "value": "Standard_LRS"
+                        },
+                        "sfReverseProxyCertificateUrlValue": {
+                            "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                        },
+                        "sfReverseProxyCertificateThumbprint": {
+                            "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                        },
+                        "sslCertificateUrlValue": {
+                            "value": "https://msfkeyvault.vault.azure.net/secrets/MsfRPCert/d41697a603e7491788ff5bbef5af160a"
+                        },
+                        "sslCertificateThumbprint": {
+                            "value": "9A227BB7D8A8CD92C60E121B1725154545DA81E7"
+                        }                    
+                    }
+                },
+                {
+                    "testName": "Verify Get-MSFClusterStatus for Three node cluster with valid inputs",
+                    "testDescription":"Getting the create cluster status",
+                    "testExpectedResult":"successful",
+                    "testCollectionFolder": "Get-ThreeNodeClusterStatus",
+                    "testURL": "",
+                    "testParameters":{"ResourceGroupName":"{{svResourceGroupName3}}","DeploymentId": "{{svDeploymentId3}}","statusCode": "{{svCode}}"},
+                    "testBody": {}
+                }
+            ]
+        }
+    ]
+}

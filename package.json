@@ -1,0 +1,23 @@
+{
+  "name": "msf-rest-api-testing",
+  "version": "1.4.0",
+  "description": "Testing Rest APIs - MSF project",
+  "main": "app.js",
+  "scripts": {
+    "start": "app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ganesh Ransarje",
+  "dependencies": {
+    "newman-reporter-junitextended": "file:./reporters/newman-reporter-junitextended",
+    "dateformat": "^2.0.0",
+    "junit-report-merger": "0.0.4",
+    "minimist": "^1.2.0",
+    "newman": "^3.6.0",
+    "promise-each": "^2.2.0",
+    "recursive-readdir": "^2.2.1",
+    "winston": "^2.3.1",
+    "winston-daily-rotate-file": "^1.4.6",
+    "xunit-viewer": "^5.0.3"
+  }
+}

@@ -1,0 +1,6006 @@
+{
+	"info": {
+		"name": "MSF REST API Testing",
+		"_postman_id": "e4ca3e29-d86f-13e5-1215-9e5f11c1d7b4",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		
+		{
+			"name": "Create One Node Cluster",
+			"description": "Creating cluster with one node and getting status",
+			"item": 
+			[
+				{
+					"name": "Test.CreateClusterWithOneNode",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 200\"] = responseCode.code === 200",
+									"if (responseCode.code == 200)",
+									"{",
+									"    var data = JSON.parse(responseBody);",
+									"    var resourceGroupName = data.ResourceGroupName;",
+									"    var deploymentId = data.DeploymentID;",
+									"    tests[\"'Resource Group Name' not null \"] = resourceGroupName !== null;",
+									"    tests[\"'Deployment ID' not null \"] = deploymentId !== null;",
+									"    postman.setGlobalVariable(\"svResourceGroupName\", resourceGroupName );",
+									"    postman.setGlobalVariable(\"svDeploymentId\", deploymentId);",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"var date = new Date();",
+									"var currenTime = date.getMinutes() + \"\" + date.getSeconds();",
+									"var clusterName = \"test\" + currenTime;",
+									"postman.setGlobalVariable(\"svclusterName1\", clusterName); ",
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName); ",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "POST",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "tenantId",
+								"value": "{{tenantId}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forCreateCluster}}"
+							},
+							{
+								"key": "subscriptionID",
+								"value": "{{subscriptionID}}"
+							},
+							{
+								"key": "requestorid",
+								"value": "ganesh.ransarje@atos.net",
+								"disabled": true
+							},
+							{
+								"key": "clusterType",
+								"value": "{{clusterType}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{New-MSFCluster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{New-MSFCluster}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+			
+		},
+		{
+			"name":"Get-OneNodeClusterStatus",
+			"description":"Getting status of created one node cluster",
+			"item":[
+				{
+					"name": "Test.Get-MSFClusterStatusForOneNode",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 200\"] = responseCode.code === 200;",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"postman.setGlobalVariable(\"svCode\", code);",
+									"if(code == \"Succeeded\"){tests[\"Code is: Succeeded\"] = code == \"Succeeded\" === true;}",
+									"else if(code == \"Failed\")",
+									"{ ",
+									"    //postman.setNextRequest('null');",
+									"}",
+									"else if(code == \"Running\")",
+									"{ ",
+									"    console.log(\"waiting for cluster creation...\");",
+									"    postman.setNextRequest('Test.DelayForGetOneNode');",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"ResourceGroupName\", data.testParameters.ResourceGroupName); ",
+									"postman.setEnvironmentVariable(\"DeploymentId\", data.testParameters.DeploymentId); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "GET",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forGetClusterStatus}}"
+							}
+						],
+						"body": {},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Get-MSFClusterStatus}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Get-MSFClusterStatus}}"
+							],
+							"query": [
+								{
+									"key": "resourcegroup",
+									"value": "{{ResourceGroupName}}"
+								},
+								{
+									"key": "deploymentname",
+									"value": "{{DeploymentId}}"
+								},
+								{
+									"key": "subscriptionid",
+									"value": "{{subscriptionid}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Test.DelayForGetOneNode",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"var response = responseTime;",
+									"var seconds = response/1000;",
+									"var statusCode = pm.variables.get(\"svCode\");",
+									"if(statusCode !== \"Succeeded\" && statusCode !== \"Failed\"){postman.setNextRequest('Test.Get-MSFClusterStatusForOneNode');}"
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": 
+						{
+							"raw": "{{Postman-Domain}}/delay/10",
+							"host": 
+							[
+								"{{Postman-Domain}}"
+							],
+							"path": 
+							[
+								"delay",
+								"10"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]	
+		},
+		{
+			"name": "Create Two Node Cluster",
+			"description": "Creating cluster with Two node and getting status",
+			"item": 
+			[
+				{
+					"name": "Test.CreateClusterWithTwoNode",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 200\"] = responseCode.code === 200",
+									"if (responseCode.code == 200)",
+									"{",
+									"    var data = JSON.parse(responseBody);",
+									"    var resourceGroupName = data.ResourceGroupName;",
+									"    var deploymentId = data.DeploymentID;",
+									"    tests[\"'Resource Group Name' not null\"] = resourceGroupName !== null;",
+									"    tests[\"'Deployment ID' not null\"] = deploymentId !== null;",
+									"    postman.setGlobalVariable(\"svResourceGroupName2\", resourceGroupName );",
+									"    postman.setGlobalVariable(\"svDeploymentId2\", deploymentId);",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"var date = new Date();",
+									"var currenTime = date.getMinutes() + \"\" + date.getSeconds();",
+									"var clusterName = \"test\" + currenTime;",
+									"postman.setGlobalVariable(\"svclusterName2\", clusterName); ",
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName); ",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "POST",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "tenantId",
+								"value": "{{tenantId}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forCreateCluster}}"
+							},
+							{
+								"key": "subscriptionID",
+								"value": "{{subscriptionID}}"
+							},
+							{
+								"key": "requestorid",
+								"value": "ganesh.ransarje@atos.net",
+								"disabled": true
+							},
+							{
+								"key": "clusterType",
+								"value": "{{clusterType}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{New-MSFCluster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{New-MSFCluster}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+			
+		},
+		{
+			"name":"Get-TwoNodeClusterStatus",
+			"description":"Getting status of created Two node cluster",
+			"item":[
+				{
+					"name": "Test.Get-MSFClusterStatusForTwoNode",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 200\"] = responseCode.code === 200;",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"postman.setGlobalVariable(\"svCode\", code);",
+									"if(code == \"Succeeded\"){tests[\"Code is: Succeeded\"] = code == \"Succeeded\" === true;}",
+									"else if(code == \"Failed\")",
+									"{ ",
+									"    //postman.setNextRequest('null');",
+									"}",
+									"else if(code == \"Running\")",
+									"{ ",
+									"    console.log(\"waiting for cluster creation...\");",
+									"    postman.setNextRequest('Test.DelayForGetTwoNode');",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"ResourceGroupName\", data.testParameters.ResourceGroupName); ",
+									"postman.setEnvironmentVariable(\"DeploymentId\", data.testParameters.DeploymentId); "
+									
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "GET",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forGetClusterStatus}}"
+							}
+						],
+						"body": {},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Get-MSFClusterStatus}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Get-MSFClusterStatus}}"
+							],
+							"query": [
+								{
+									"key": "resourcegroup",
+									"value": "{{ResourceGroupName}}"
+								},
+								{
+									"key": "deploymentname",
+									"value": "{{DeploymentId}}"
+								},
+								{
+									"key": "subscriptionid",
+									"value": "{{subscriptionid}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Test.DelayForGetTwoNode",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"var response = responseTime;",
+									"var seconds = response/1000;",
+									"var statusCode = pm.variables.get(\"svCode\");",
+									"if(statusCode !== \"Succeeded\" && statusCode !== \"Failed\"){postman.setNextRequest('Test.Get-MSFClusterStatusForTwoNode');}"
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": 
+						{
+							"raw": "{{Postman-Domain}}/delay/10",
+							"host": 
+							[
+								"{{Postman-Domain}}"
+							],
+							"path": 
+							[
+								"delay",
+								"10"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]	
+		},
+		{
+			"name": "Create Three Node Cluster",
+			"description": "Creating cluster with Three node and getting status",
+			"item": 
+			[
+				{
+					"name": "Test.CreateClusterWithThreeNode",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 200\"] = responseCode.code === 200",
+									"if (responseCode.code == 200)",
+									"{",
+									"    var data = JSON.parse(responseBody);",
+									"    var resourceGroupName = data.ResourceGroupName;",
+									"    var deploymentId = data.DeploymentID;",
+									"    tests[\"'Resource Group Name' not null\"] = resourceGroupName !== null;",
+									"    tests[\"'Deployment ID' not null\"] = deploymentId !== null;",
+									"    postman.setGlobalVariable(\"svResourceGroupName3\", resourceGroupName );",
+									"    postman.setGlobalVariable(\"svDeploymentId3\", deploymentId);",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"var date = new Date();",
+									"var currenTime = date.getMinutes() + \"\" + date.getSeconds();",
+									"var clusterName = \"test\" + currenTime;",
+									"postman.setGlobalVariable(\"svclusterName3\", clusterName); ",
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName); ",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "POST",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "tenantId",
+								"value": "{{tenantId}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forCreateCluster}}"
+							},
+							{
+								"key": "subscriptionID",
+								"value": "{{subscriptionID}}"
+							},
+							{
+								"key": "requestorid",
+								"value": "ganesh.ransarje@atos.net",
+								"disabled": true
+							},
+							{
+								"key": "clusterType",
+								"value": "{{clusterType}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{New-MSFCluster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{New-MSFCluster}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+			
+		},
+		{
+			"name":"Get-ThreeNodeClusterStatus",
+			"description":"Getting status of created Three node cluster",
+			"item":[
+				{
+					"name": "Test.Get-MSFClusterStatusForThreeNode",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 200\"] = responseCode.code === 200;",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"postman.setGlobalVariable(\"svCode\", code);",
+									"if(code == \"Succeeded\"){tests[\"Code is: Succeeded\"] = code == \"Succeeded\" === true;}",
+									"else if(code == \"Failed\")",
+									"{ ",
+									"    //postman.setNextRequest('null');",
+									"}",
+									"else if(code == \"Running\")",
+									"{ ",
+									"    console.log(\"waiting for cluster creation...\");",
+									"    postman.setNextRequest('Test.DelayForGetThreeNode');",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"ResourceGroupName\", data.testParameters.ResourceGroupName); ",
+									"postman.setEnvironmentVariable(\"DeploymentId\", data.testParameters.DeploymentId); "
+									
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "GET",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forGetClusterStatus}}"
+							}
+						],
+						"body": {},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Get-MSFClusterStatus}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Get-MSFClusterStatus}}"
+							],
+							"query": [
+								{
+									"key": "resourcegroup",
+									"value": "{{ResourceGroupName}}"
+								},
+								{
+									"key": "deploymentname",
+									"value": "{{DeploymentId}}"
+								},
+								{
+									"key": "subscriptionid",
+									"value": "{{subscriptionid}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Test.DelayForGetThreeNode",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"var response = responseTime;",
+									"var seconds = response/1000;",
+									"var statusCode = pm.variables.get(\"svCode\");",
+									"if(statusCode !== \"Succeeded\" && statusCode !== \"Failed\"){postman.setNextRequest('Test.Get-MSFClusterStatusForThreeNode');}"
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": 
+						{
+							"raw": "{{Postman-Domain}}/delay/10",
+							"host": 
+							[
+								"{{Postman-Domain}}"
+							],
+							"path": 
+							[
+								"delay",
+								"10"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]	
+		},
+
+		{
+			"name": "Verify Create Cluster with Blank ClusterName",
+			"description": "Verify Create Cluster with Blank ClusterName",
+			"item": 
+			[
+				{
+					"name": "Test.CreateClusterWithBlankClusterName",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var errorCode = data.code;",
+									"var errorMessage = data.message;",
+									"tests[\"Code is 'Bad Request'\"] = errorCode == \"Bad Request\" === true;",
+									"tests [\"Verify error message is ' Blank clusterName value is not allowed.Please enter a valid clusterName'\"] = errorMessage == \" Blank clusterName value is not allowed.Please enter a valid clusterName\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "POST",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "tenantId",
+								"value": "{{tenantId}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forCreateCluster}}"
+							},
+							{
+								"key": "subscriptionID",
+								"value": "{{subscriptionID}}"
+							},
+							{
+								"key": "requestorid",
+								"value": "ganesh.ransarje@atos.net",
+								"disabled": true
+							},
+							{
+								"key": "clusterType",
+								"value": "{{clusterType}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{New-MSFCluster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{New-MSFCluster}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+			
+		},
+
+		{
+			"name": "Verify Create Cluster with Invalid ClusterName",
+			"description": "Verify Create Cluster with Invalid ClusterName",
+			"item": 
+			[
+				{
+					"name": "Test.CreateClusterWithInvalidClusterName",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var errorCode = data.code;",
+									"var errorMessage = data.message;",
+									"tests[\"Code is 'Bad Request'\"] = errorCode == \"Bad Request\" === true;",
+									"tests[\"Message is 'Please enter a valid clusterName'\"] = errorMessage == \"Please enter a valid clusterName\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "POST",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "tenantId",
+								"value": "{{tenantId}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forCreateCluster}}"
+							},
+							{
+								"key": "subscriptionID",
+								"value": "{{subscriptionID}}"
+							},
+							{
+								"key": "requestorid",
+								"value": "ganesh.ransarje@atos.net",
+								"disabled": true
+							},
+							{
+								"key": "clusterType",
+								"value": "{{clusterType}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{New-MSFCluster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{New-MSFCluster}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+			
+		},
+
+		{
+			"name": "Verify Create Cluster with Existing ClusterName",
+			"description": "Verify Create Cluster with Existing ClusterName",
+			"item": 
+			[
+				{
+					"name": "Test.CreateClusterWithExistingClusterName",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 409\"] = responseCode.code === 409",
+									"var data = JSON.parse(responseBody);",
+									"var errorCode = data.code;",
+									"var errorMessage = data.message;",
+									"tests[\"Code is 'Bad Request'\"] = errorCode == \"Bad Request\" === true;",
+									"tests [\"Verify error message is 'Cluster name already exist.'\"] = errorMessage == \"The cluster name already exist\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName); ",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "POST",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "tenantId",
+								"value": "{{tenantId}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forCreateCluster}}"
+							},
+							{
+								"key": "subscriptionID",
+								"value": "{{subscriptionID}}"
+							},
+							{
+								"key": "requestorid",
+								"value": "ganesh.ransarje@atos.net",
+								"disabled": true
+							},
+							{
+								"key": "clusterType",
+								"value": "{{clusterType}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{New-MSFCluster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{New-MSFCluster}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+			
+		},
+
+		{
+			"name": "Verify Create Cluster with Blank clusterLocation",
+			"description": "Verify Create Cluster with Blank clusterLocation",
+			"item": 
+			[
+				{
+					"name": "Test.CreateClusterWithBlankClusterLocation",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var errorCode = data.code;",
+									"var errorMessage = data.message;",
+									"tests[\"Code is 'Bad Request'\"] = errorCode == \"Bad Request\" === true;",
+									"tests [\"Verify error message is ' Blank cluster Location value is not allowed. Only West Europe region is supported'\"] = errorMessage == \" Blank clusterLocation value is not allowed. Only West Europe region is supported\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName); ",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "POST",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "tenantId",
+								"value": "{{tenantId}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forCreateCluster}}"
+							},
+							{
+								"key": "subscriptionID",
+								"value": "{{subscriptionID}}"
+							},
+							{
+								"key": "requestorid",
+								"value": "ganesh.ransarje@atos.net",
+								"disabled": true
+							},
+							{
+								"key": "clusterType",
+								"value": "{{clusterType}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{New-MSFCluster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{New-MSFCluster}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+			
+		},
+
+		{
+			"name": "Verify Create Cluster with Blank dnsName",
+			"description": "Verify Create Cluster with Blank dnsName",
+			"item": 
+			[
+				{
+					"name": "Test.CreateClusterWithBlankDnsName",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var errorCode = data.code;",
+									"var errorMessage = data.message;",
+									"tests[\"Code is 'Bad Request'\"] = errorCode == \"Bad Request\" === true;",
+									"tests [\"Verify error message is ' Blank dnsName value is not allowed.'\"] = errorMessage == \" Blank dnsName value is not allowed. \" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName); ",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "POST",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "tenantId",
+								"value": "{{tenantId}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forCreateCluster}}"
+							},
+							{
+								"key": "subscriptionID",
+								"value": "{{subscriptionID}}"
+							},
+							{
+								"key": "requestorid",
+								"value": "ganesh.ransarje@atos.net",
+								"disabled": true
+							},
+							{
+								"key": "clusterType",
+								"value": "{{clusterType}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{New-MSFCluster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{New-MSFCluster}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+			
+		},
+
+		{
+			"name": "Verify Create Cluster with Blank vmImageSku",
+			"description": "Verify Create Cluster with Blank vmImageSkue",
+			"item": 
+			[
+				{
+					"name": "Test.CreateClusterWithBlankVmImageSku",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var errorCode = data.code;",
+									"var errorMessage = data.message;",
+									"tests[\"Code is 'Bad Request'\"] = errorCode == \"Bad Request\" === true;",
+									"tests [\"Verify error message is ' Blank vmImageSku value is not allowed.'\"] = errorMessage == \" Blank vmImageSku value is not allowed. \" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName); ",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "POST",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "tenantId",
+								"value": "{{tenantId}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forCreateCluster}}"
+							},
+							{
+								"key": "subscriptionID",
+								"value": "{{subscriptionID}}"
+							},
+							{
+								"key": "requestorid",
+								"value": "ganesh.ransarje@atos.net",
+								"disabled": true
+							},
+							{
+								"key": "clusterType",
+								"value": "{{clusterType}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{New-MSFCluster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{New-MSFCluster}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+			
+		},
+
+		{
+			"name": "Verify Create Cluster with Blank storageAccountType",
+			"description": "Verify Create Cluster with Blank storageAccountType",
+			"item": 
+			[
+				{
+					"name": "Test.CreateClusterWithBlankStorageAccountType",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var errorCode = data.code;",
+									"var errorMessage = data.message;",
+									"tests[\"Code is 'Bad Request'\"] = errorCode == \"Bad Request\" === true;",
+									"tests [\"Verify error message is 'Blank storageAccountType is not allowed.'\"] = errorMessage == \" Blank storageAccountType is not allowed. \" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName); ",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "POST",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "tenantId",
+								"value": "{{tenantId}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forCreateCluster}}"
+							},
+							{
+								"key": "subscriptionID",
+								"value": "{{subscriptionID}}"
+							},
+							{
+								"key": "requestorid",
+								"value": "ganesh.ransarje@atos.net",
+								"disabled": true
+							},
+							{
+								"key": "clusterType",
+								"value": "{{clusterType}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{New-MSFCluster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{New-MSFCluster}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+			
+		},
+
+		{
+			"name": "Verify Create Cluster with Blank reliabilityLevel",
+			"description": "Verify Create Cluster with Blank reliabilityLevel",
+			"item": 
+			[
+				{
+					"name": "Test.CreateClusterWithBlankReliabilityLevel",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var errorCode = data.code;",
+									"var errorMessage = data.message;",
+									"tests[\"Code is 'Bad Request'\"] = errorCode == \"Bad Request\" === true;",
+									"tests [\"Verify error message is ' Blank reliabilityLevel value is not allowed. Reliability Level should be bronze, silver, gold or platinum only. '\"] = errorMessage == \" Blank reliabilityLevel value is not allowed. Reliability Level should be bronze, silver, gold or platinum only. \" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName); ",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "POST",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "tenantId",
+								"value": "{{tenantId}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forCreateCluster}}"
+							},
+							{
+								"key": "subscriptionID",
+								"value": "{{subscriptionID}}"
+							},
+							{
+								"key": "requestorid",
+								"value": "ganesh.ransarje@atos.net",
+								"disabled": true
+							},
+							{
+								"key": "clusterType",
+								"value": "{{clusterType}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{New-MSFCluster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{New-MSFCluster}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+			
+		},
+
+		{
+			"name": "Verify Create Cluster with Blank Node Values",
+			"description": "Verify Create Cluster with Blank Node Values",
+			"item": 
+			[
+				{
+					"name": "Test.CreateClusterWithBlankNodeValues",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var errorCode = data.code;",
+									"var errorMessage = data.message;",
+									"tests[\"Code is 'Bad Request'\"] = errorCode == \"Bad Request\" === true;",
+									"tests [\"Verify error message is 'Blank nodetype name is not allowed.  Blank nodedurabilityLevel value is not allowed.  Blank InstanceCount value is not allowed.  Blank Size is not allowed.  Blank Scalein value is not allowed.  Blank ScaleOut value is not allowed.  Blank MaxNode value is not allowed.  Blank MinNode value is not allowed.  Blank IsPrimaryNode value is not allowed.  Blank subnetName value is not allowed.  Blank subnetPrefix value is not allowed.  Blank placement value is not allowed.  Blank LBType value is not allowed. Please enter a valid subnet prefix. Node name should be between 1-9 characters only.InstanceCount should be between 3-50 only. Scalein value should be between 1-100 only. ScaleOut value should be between 1-100 only. MinNode value should be between 1-50 only.Load Balancer Type should be internal or public.Node Durability Level should be bronze, silver, gold or platinum only at node 1. Primary node should be true or false only. For Silver reliability level, MinNode value should be 5 or greater at node 1. There should be only one primary node.For dev cluster node lbtype should be public only. For dev cluster node durability level should be bronze only at node 1.'\"] = errorMessage == \"Blank nodetype name is not allowed.  Blank nodedurabilityLevel value is not allowed.  Blank InstanceCount value is not allowed.  Blank Size is not allowed.  Blank Scalein value is not allowed.  Blank ScaleOut value is not allowed.  Blank MaxNode value is not allowed.  Blank MinNode value is not allowed.  Blank IsPrimaryNode value is not allowed.  Blank subnetName value is not allowed.  Blank subnetPrefix value is not allowed.  Blank placement value is not allowed.  Blank LBType value is not allowed. Please enter a valid subnet prefix. Node name should be between 1-9 characters only.InstanceCount should be between 3-50 only. Scalein value should be between 1-100 only. ScaleOut value should be between 1-100 only. MinNode value should be between 1-50 only.Load Balancer Type should be internal or public.Node Durability Level should be bronze, silver, gold or platinum only at node 1. Primary node should be true or false only. For Silver reliability level, MinNode value should be 5 or greater at node 1. There should be only one primary node.For dev cluster node lbtype should be public only. For dev cluster node durability level should be bronze only at node 1. \" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName); ",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "POST",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "tenantId",
+								"value": "{{tenantId}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forCreateCluster}}"
+							},
+							{
+								"key": "subscriptionID",
+								"value": "{{subscriptionID}}"
+							},
+							{
+								"key": "requestorid",
+								"value": "ganesh.ransarje@atos.net",
+								"disabled": true
+							},
+							{
+								"key": "clusterType",
+								"value": "{{clusterType}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{New-MSFCluster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{New-MSFCluster}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+			
+		},
+
+		{
+			"name": "Verify Create Cluster with Blank Certificate Details",
+			"description": "Verify Create Cluster with Blank Certificate Details",
+			"item": 
+			[
+				{
+					"name": "Test.CreateClusterWithBlankCertificateDetails",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var errorCode = data.code;",
+									"var errorMessage = data.message;",
+									"tests[\"Code is 'Bad Request'\"] = errorCode == \"Bad Request\" === true;",
+									"tests [\"Verify error message is ' Blank certificateThumbprint value is not allowed.  Blank sourceVaultvalue is not allowed.  Blank certificateUrlvalue is not allowed.  Blank sfReverseProxyCertificateUrl value is not allowed.  Blank sfReverseProxyCertificateThumbprint value is not allowed.  Blank sslCertificateUrl value is not allowed.  Blank sslCertificateThumbprint value is not allowed. Source vault value should always start with '/subscriptions/'Certificate URL value should always start with 'https://'Reverse Proxy Certificate URL value should always start with 'https://''\"] = errorMessage == \" Blank certificateThumbprint value is not allowed.  Blank sourceVaultvalue is not allowed.  Blank certificateUrlvalue is not allowed.  Blank sfReverseProxyCertificateUrl value is not allowed.  Blank sfReverseProxyCertificateThumbprint value is not allowed.  Blank sslCertificateUrl value is not allowed.  Blank sslCertificateThumbprint value is not allowed. Source vault value should always start with '/subscriptions/'Certificate URL value should always start with 'https://'Reverse Proxy Certificate URL value should always start with 'https://'\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName); ",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "POST",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "tenantId",
+								"value": "{{tenantId}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forCreateCluster}}"
+							},
+							{
+								"key": "subscriptionID",
+								"value": "{{subscriptionID}}"
+							},
+							{
+								"key": "requestorid",
+								"value": "ganesh.ransarje@atos.net",
+								"disabled": true
+							},
+							{
+								"key": "clusterType",
+								"value": "{{clusterType}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{New-MSFCluster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{New-MSFCluster}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+			
+		},
+		
+		{
+			"name": "Add Ports",
+			"description": "Adding the ports",
+			"item": [
+				{
+					"name": "Test.AddPort",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 200\"] = responseCode.code === 200",
+									"var data = JSON.parse(responseBody);",
+									"var message = data.message;",
+									"var lbname = pm.variables.get(\"svLBName\");",
+									"var payload = JSON.parse(pm.variables.get(\"requestBody\"));",
+									"var AddPorts = payload.AddPorts;",
+									"tests [\"Port added successfully\"] = message == \"Port \"+ AddPorts +\" added successfully on LB \"+lbname + \" , Please wait for 5 minutes changes to take effect\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var LBName1 = \"LB-\";",
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"var getClusterName = pm.variables.get(\"clusterName\")",
+									"var clusterName = getClusterName + \"-\";",
+									"var nodeName = \"frontend\";",
+									"var LBName = LBName1 + clusterName + nodeName;",
+									"postman.setGlobalVariable(\"svLBName\", LBName);",
+									"postman.setEnvironmentVariable(\"LBName\", data.testParameters.LBName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},	
+
+		{
+			
+			"name": "Add Existing Port",
+			"description": "Adding the existing port to the cluster",
+			"item": [
+				{
+					"name": "Test.AddPortWithExistingPort",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 409\"] = responseCode.code === 409",
+									"var data = JSON.parse(responseBody);",
+									"var message = data.message;",
+									"var payload = JSON.parse(pm.variables.get(\"requestBody\"));",
+									"var AddPorts = payload.AddPorts;",
+									"tests [\"Failed to add port, as PORT already exist\"] = message == \"Failed to add port as \"+ AddPorts +\" already exist\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"LBName\", data.testParameters.LBName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+				
+				
+			]
+		},
+
+		{
+			"name": "Remove Ports",
+			"description": "Removing the ports",
+			"item": 
+			[
+				{
+					"name": "Test.RemovePort",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 200\"] = responseCode.code === 200",
+									"var data = JSON.parse(responseBody);",
+									"var message = data.message;",
+									"var lbname = pm.variables.get(\"LBName\");",
+									"var RemovePorts = pm.variables.get(\"RemovePort\")",
+									"tests [\"PORT removed successfully\"] = message == \"Port \"+ RemovePorts + \" removed successfully from \"+lbname + \", Please wait for 5 minutes changes to take effect\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"LBName\", data.testParameters.LBName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); ",
+									"postman.setGlobalVariable(\"RemovePort\", data.testParameters.RemovePort);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							],
+							"query": [
+								{
+									"key": "CustomerSubscription",
+									"value": "{{subscriptionid}}"	
+								},
+								{
+									"key": "LBName",
+									"value": "{{LBName}}"	
+								},
+								{
+									"key": "clusterName",
+									"value": "{{clusterName}}"	
+								},
+								{
+									"key": "AddPorts",
+									"value": ""	
+								},
+								{
+									"key": "RemovePorts",
+									"value": "{{RemovePort}}"
+								},
+								{
+									"key": "RequesterName",
+									"value": "" 
+								}
+							]	
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]	
+		},
+
+		{
+			"name": "Remove Non-existent Port",
+			"description": "Removing the non-existent port",
+			"item": 
+			[
+				{
+					"name": "Test.RemoveNonExistentPort",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 404\"] = responseCode.code === 404",
+									"var data = JSON.parse(responseBody);",
+									"var message = data.message;",
+									"var lbname = pm.variables.get(\"LBName\");",
+									"var RemovePorts = pm.variables.get(\"RemovePort\")",
+									"tests [\"Failed to remove ports, as port does not exist\"] = message == \"Failed to remove port as \" + RemovePorts + \" does not exist\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"LBName\", data.testParameters.LBName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); ",
+									"postman.setGlobalVariable(\"RemovePort\", data.testParameters.RemovePort);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							],
+							"query": [
+								{
+									"key": "CustomerSubscription",
+									"value": "{{subscriptionid}}"	
+								},
+								{
+									"key": "LBName",
+									"value": "{{LBName}}"	
+								},
+								{
+									"key": "clusterName",
+									"value": "{{clusterName}}"	
+								},
+								{
+									"key": "AddPorts",
+									"value": ""	
+								},
+								{
+									"key": "RemovePorts",
+									"value": "{{RemovePort}}"
+								},
+								{
+									"key": "RequesterName",
+									"value": "" 
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Remove Port API with Blank CustomerSubscription",
+			"description": "Removing Port API with Blank CustomerSubscriptions",
+			"item": 
+			[
+				{
+					"name": "Test.RemovePortwithBlankCustomerSubscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var message = data.message;",
+									"tests[\"Code is: Bad Request\"] = code == \"Bad Request\" === true;",
+									"tests [\"Blank CustomerSubscription value is not allowed.\"] = message == \"Blank CustomerSubscription value is not allowed.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"LBName\", data.testParameters.LBName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); ",
+									"postman.setGlobalVariable(\"RemovePort\", data.testParameters.RemovePort);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							],
+							"query": [
+								{
+									"key": "CustomerSubscription",
+									"value": ""	
+								},
+								{
+									"key": "LBName",
+									"value": "{{LBName}}"	
+								},
+								{
+									"key": "clusterName",
+									"value": "{{clusterName}}"	
+								},
+								{
+									"key": "AddPorts",
+									"value": ""	
+								},
+								{
+									"key": "RemovePorts",
+									"value": "{{RemovePort}}"
+								},
+								{
+									"key": "RequesterName",
+									"value": "" 
+								}
+							]	
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]	
+		},
+
+		{
+			"name": "Remove Port API with Blank LBName",
+			"description": "Removing the Port with Blank LBName",
+			"item": 
+			[
+				{
+					"name": "Test.RemovePortwithBlankLBName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var message = data.message;",
+									"tests[\"Code is: Bad Request\"] = code == \"Bad Request\" === true;",
+									"tests [\"Blank LBName value is not allowed.\"] = message == \"Blank LBName value is not allowed.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); ",
+									"postman.setGlobalVariable(\"RemovePort\", data.testParameters.RemovePort);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							],
+							"query": [
+								{
+									"key": "CustomerSubscription",
+									"value": "{{subscriptionid}}"	
+								},
+								{
+									"key": "LBName",
+									"value": ""	
+								},
+								{
+									"key": "clusterName",
+									"value": "{{clusterName}}"	
+								},
+								{
+									"key": "AddPorts",
+									"value": ""	
+								},
+								{
+									"key": "RemovePorts",
+									"value": "{{RemovePort}}"
+								},
+								{
+									"key": "RequesterName",
+									"value": "" 
+								}
+							]	
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]	
+		},
+
+		{
+			"name": "Remove Port API with Blank ClusterName",
+			"description": "Removing the port with Blank ClusterName",
+			"item": 
+			[
+				{
+					"name": "Test.RemovePortwithBlankClusterName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var message = data.message;",
+									"tests[\"Code is: Bad Request\"] = code == \"Bad Request\" === true;",
+									"tests [\"Blank clusterName value is not allowed.\"] = message == \"Blank clusterName value is not allowed.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"LBName\", data.testParameters.LBName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); ",
+									"postman.setGlobalVariable(\"RemovePort\", data.testParameters.RemovePort);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							],
+							"query": [
+								{
+									"key": "CustomerSubscription",
+									"value": "{{subscriptionid}}"	
+								},
+								{
+									"key": "LBName",
+									"value": "{{LBName}}"	
+								},
+								{
+									"key": "clusterName",
+									"value": ""	
+								},
+								{
+									"key": "AddPorts",
+									"value": ""	
+								},
+								{
+									"key": "RemovePorts",
+									"value": "{{RemovePort}}"
+								},
+								{
+									"key": "RequesterName",
+									"value": "" 
+								}
+							]	
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]	
+		},
+
+		{
+			"name": "Remove Port API with Blank RemovePorts",
+			"description": "Removing the Port with Blank RemovePorts",
+			"item": 
+			[
+				{
+					"name": "Test.RemovePortwithBlankRemovePorts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var message = data.message;",
+									"tests[\"Code is: Bad Request\"] = code == \"Bad Request\" === true;",
+									"tests [\"No remove operations performed on blank port.\"] = message == \"No remove operations performed on blank port.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"LBName\", data.testParameters.LBName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							],
+							"query": [
+								{
+									"key": "CustomerSubscription",
+									"value": "{{subscriptionid}}"	
+								},
+								{
+									"key": "LBName",
+									"value": "{{LBName}}"	
+								},
+								{
+									"key": "clusterName",
+									"value": "{{clusterName}}"	
+								},
+								{
+									"key": "AddPorts",
+									"value": ""	
+								},
+								{
+									"key": "RemovePorts",
+									"value": ""
+								},
+								{
+									"key": "RequesterName",
+									"value": "" 
+								}
+							]	
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]	
+		},
+
+		{
+			"name": "Remove Port API with Invalid CustomerSubscription",
+			"description": "Removing the port with Invalid CustomerSubscription",
+			"item": 
+			[
+				{
+					"name": "Test.RemovePortwithInvalidCustomerSubscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 404\"] = responseCode.code === 404",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var message = data.message;",
+									"tests[\"Code is: Not Found\"] = code == \"Not Found\" === true;",
+									"var InvalidCustomerSubscription = pm.variables.get(\"InvalidCustomerSubscription\");",
+									"tests [\"No such CustomerSubscription exists.\"] = message == \"No such CustomerSubscription \" + InvalidCustomerSubscription + \" exists.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"InvalidCustomerSubscription\", data.testParameters.InvalidCustomerSubscription);",
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"LBName\", data.testParameters.LBName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); ",
+									"postman.setGlobalVariable(\"RemovePort\", data.testParameters.RemovePort);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							],
+							"query": [
+								{
+									"key": "CustomerSubscription",
+									"value": "{{InvalidCustomerSubscription}}"	
+								},
+								{
+									"key": "LBName",
+									"value": "{{LBName}}"	
+								},
+								{
+									"key": "clusterName",
+									"value": "{{clusterName}}"	
+								},
+								{
+									"key": "AddPorts",
+									"value": ""	
+								},
+								{
+									"key": "RemovePorts",
+									"value": "{{RemovePort}}"
+								},
+								{
+									"key": "RequesterName",
+									"value": "" 
+								}
+							]	
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]	
+		},
+
+		{
+			"name": "Remove Port API with Invalid LBName",
+			"description": "Removing the port with Invalid LBName",
+			"item": 
+			[
+				{
+					"name": "Test.RemovePortwithInvalidLBName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 404\"] = responseCode.code === 404",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var message = data.message;",
+									"tests[\"Code is: Not Found\"] = code == \"Not Found\" === true;",
+									"var InvalidLBName = pm.variables.get(\"InvalidLBName\");",
+									"tests [\"No such Load Balancer exists.\"] = message == \"No such Load Balancer \" + InvalidLBName + \" exists.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"InvalidLBName\", data.testParameters.InvalidLBName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); ",
+									"postman.setGlobalVariable(\"RemovePort\", data.testParameters.RemovePort);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							],
+							"query": [
+								{
+									"key": "CustomerSubscription",
+									"value": "{{subscriptionid}}"	
+								},
+								{
+									"key": "LBName",
+									"value": "{{InvalidLBName}}"	
+								},
+								{
+									"key": "clusterName",
+									"value": "{{clusterName}}"	
+								},
+								{
+									"key": "AddPorts",
+									"value": ""	
+								},
+								{
+									"key": "RemovePorts",
+									"value": "{{RemovePort}}"
+								},
+								{
+									"key": "RequesterName",
+									"value": "" 
+								}
+							]	
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]	
+		},
+
+		{
+			"name": "Remove Port API with Invalid ClusterName",
+			"description": "Removing the port with Invalid ClusterName",
+			"item": 
+			[
+				{
+					"name": "Test.RemovePortwithInvalidClusterName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 404\"] = responseCode.code === 404",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var message = data.message;",
+									"tests[\"Code is: Not Found\"] = code == \"Not Found\" === true;",
+									"var InvalidClusterName = pm.variables.get(\"InvalidClusterName\");",
+									"tests [\"No such clusterName exists.\"] = message == \"No such clusterName \" + InvalidClusterName + \" exists.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"InvalidClusterName\", data.testParameters.InvalidClusterName);",
+									"postman.setEnvironmentVariable(\"LBName\", data.testParameters.LBName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); ",
+									"postman.setGlobalVariable(\"RemovePort\", data.testParameters.RemovePort);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							],
+							"query": [
+								{
+									"key": "CustomerSubscription",
+									"value": "{{subscriptionid}}"	
+								},
+								{
+									"key": "LBName",
+									"value": "{{LBName}}"	
+								},
+								{
+									"key": "clusterName",
+									"value": "{{InvalidClusterName}}"	
+								},
+								{
+									"key": "AddPorts",
+									"value": ""	
+								},
+								{
+									"key": "RemovePorts",
+									"value": "{{RemovePort}}"
+								},
+								{
+									"key": "RequesterName",
+									"value": "" 
+								}
+							]	
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]	
+		},
+
+		{
+			"name": "Add Port with With Blank CustomerSubscription",
+			"description": "Add Port With Blank CustomerSubscription",
+			"item": 
+			[
+				{
+					"name": "Test.AddPortWithBlankCustomerSubscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var message = data.message;",
+									"tests[\"Code is: 'Bad Request'\"] = code == \"Bad Request\" === true;",
+									"tests [\"Verify message is 'Blank CustomerSubscription value is not allowed.\"] = message == \"Blank CustomerSubscription value is not allowed.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"LBName\", data.testParameters.LBName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Add Port with With Blank LBName",
+			"description": "Add Port With Blank LBName",
+			"item": 
+			[
+				{
+					"name": "Test.AddPortWithBlankLBName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var message = data.message;",
+									"tests[\"Code is: 'Bad Request'\"] = code == \"Bad Request\" === true;",
+									"tests [\"Verify message is 'Blank LBName value is not allowed.\"] = message == \"Blank LBName value is not allowed.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"LBName\", data.testParameters.LBName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Add Port with With Blank ClusterName",
+			"description": "Add Port With Blank ClusterName",
+			"item": 
+			[
+				{
+					"name": "Test.AddPortWithBlankClusterName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var message = data.message;",
+									"tests[\"Code is: 'Bad Request'\"] = code == \"Bad Request\" === true;",
+									"tests [\"Verify message is 'Blank clusterName value is not allowed.\"] = message == \"Blank clusterName value is not allowed.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"LBName\", data.testParameters.LBName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Add Port with With Invalid CustomerSubscription",
+			"description": "Add Port With Invalid CustomerSubscription",
+			"item": 
+			[
+				{
+					"name": "Test.AddPortWithInvalidClusterSubscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 404\"] = responseCode.code === 404",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var message = data.message;",
+									"tests[\"Code is: 'Not Found'\"] = code == \"Not Found\" === true;",
+									"var payload = JSON.parse(pm.variables.get(\"requestBody\"));",
+									"var InvalidCustomerSubscription = payload.CustomerSubscription;",
+									"tests [\"Verify message is 'No such CustomerSubscription exists.\"] = message == \"No such CustomerSubscription \" + InvalidCustomerSubscription + \" exists.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"LBName\", data.testParameters.LBName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Add Port with With Invalid LBName",
+			"description": "Add Port With Invalid LBName",
+			"item": 
+			[
+				{
+					"name": "Test.AddPortWithInvalidLBName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 404\"] = responseCode.code === 404",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var message = data.message;",
+									"tests[\"Code is: 'Not Found'\"] = code == \"Not Found\" === true;",
+									"var payload = JSON.parse(pm.variables.get(\"requestBody\"));",
+									"var InvalidLBName = payload.LBName;",
+									"tests [\"Verify message is 'No such Load Balancer exists.\"] = message == \"No such Load Balancer \" + InvalidLBName + \" exists.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"LBName\", data.testParameters.LBName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Add Port with With Invalid ClusterName",
+			"description": "Add Port With Invalid ClusterName",
+			"item": 
+			[
+				{
+					"name": "Test.AddPortWithInvalidClusterName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 404\"] = responseCode.code === 404",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var message = data.message;",
+									"tests[\"Code is: 'Not Found'\"] = code == \"Not Found\" === true;",
+									"var payload = JSON.parse(pm.variables.get(\"requestBody\"));",
+									"var InvalidClusterName = payload.clusterName;",
+									"tests [\"Verify message is 'No such clusterName exists.\"] = message == \"No such clusterName \" + InvalidClusterName + \" exists.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"LBName\", data.testParameters.LBName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Add Port with Same port same time",
+			"description": "Add Port With Same port same time",
+			"item": 
+			[
+				{
+					"name": "Test.AddPortWithSamePortSameTime",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var message = data.message;",
+									"tests[\"Code is: 'Bad Request'\"] = code == \"Bad Request\" === true;",
+									"//tests [\"Verify message is 'No such clusterName exists.\"] = message == \"No such clusterName \" + InvalidClusterName + \" exists.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"LBName\", data.testParameters.LBName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-for-update-ports}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": {
+							"raw": "{{Domain}}/api/{{Update-MSFClusterPorts}}",
+							"host": [
+								"{{Domain}}"
+							],
+							"path": [
+								"api",
+								"{{Update-MSFClusterPorts}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "RBAC",
+			"description": "Generating token and providing access to user",
+			"item": [
+				{
+					"name": "Test.GetToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 200\"] = responseCode.code === 200",
+									"var data = JSON.parse(responseBody);",
+									"var tokenType = data.token_type;",
+									"var token = data.access_token;",
+									"tests [\"Verify token_type is ' Bearer'\"] = tokenType.indexOf(\"Bearer\") !== -1;",
+									"tests [\"Verify 'Token is not null'\"] = token !== null;",
+									"pm.globals.set(\"svtoken\", token);"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{resource}}",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{GetTokenURL}}",
+							"host": [
+								"{{GetTokenURL}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Test.addUserToSF",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 200\"] = responseCode.code === 200",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var message = data.message;",
+									"tests [\"Verify code is 'User added to the role'\"] = code == \"User added to the role\" === true;",
+									"tests [\"Verify message is 'The user has been successfully added.'\"] = message == \"The user has been successfully added.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{svtoken}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-For-addusertosf}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{AddUserToSFURL}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{AddUserToSFURL}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Verify Get Token URL with Blank GrantType",
+			"description": "Verify Get Token URL with Blank GrantType",
+			"item": [
+				{
+					"name": "Test.GetTokenwithBlankGrantType",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var error = data.error_description;",
+									"tests [\"Verify error is 'The request body must contain the following parameter: 'grant_type''\"] = error.indexOf(\"The request body must contain the following parameter: 'grant_type'\") !== -1;"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{resource}}",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{GetTokenURL}}",
+							"host": [
+								"{{GetTokenURL}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		
+		{
+			"name": "Verify Get Token URL with Blank Username",
+			"description": "Verify Get Token URL with Blank Username",
+			"item": [
+				{
+					"name": "Test.GetTokenwithBlankUsername",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var error = data.error_description;",
+									"tests [\"Verify error is 'The request body must contain the following parameter: 'username''\"] = error.indexOf(\"The request body must contain the following parameter: 'username'\") !== -1;"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{resource}}",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{GetTokenURL}}",
+							"host": [
+								"{{GetTokenURL}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Verify Get Token URL with Invalid Username",
+			"description": "Verify Get Token URL with Invalid Username",
+			"item": [
+				{
+					"name": "Test.GetTokenwithInvalidUsername",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var error = data.error_description;",
+									"tests [\"Verify error is 'To sign into this application the account must be added'\"] = error.indexOf(\"To sign into this application the account must be added\") !== -1;"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "alkesh123@atosmsf.onmicrosoft.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{resource}}",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{GetTokenURL}}",
+							"host": [
+								"{{GetTokenURL}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Verify Get Token URL with Blank Password",
+			"description": "Verify Get Token URL with Blank Password",
+			"item": [
+				{
+					"name": "Test.GetTokenwithBlankPassword",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var error = data.error_description;",
+									"tests [\"Verify error is 'The request body must contain the following parameter: 'password''\"] = error.indexOf(\"The request body must contain the following parameter: 'password'\") !== -1;"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{resource}}",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{GetTokenURL}}",
+							"host": [
+								"{{GetTokenURL}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Verify Get Token URL with Invalid Password",
+			"description": "Verify Get Token URL with Invalid Password",
+			"item": [
+				{
+					"name": "Test.GetTokenwithInvalidPassword",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var error = data.error_description;",
+									"tests [\"Verify error is 'Invalid username or password'\"] = error.indexOf(\"Invalid username or password\") !== -1;"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "VascoPune",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{resource}}",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{GetTokenURL}}",
+							"host": [
+								"{{GetTokenURL}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Verify Get Token URL with Blank ClientId",
+			"description": "Verify Get Token URL with Blank ClientId",
+			"item": [
+				{
+					"name": "Test.GetTokenwithBlankClientId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var error = data.error_description;",
+									"tests [\"Verify error is 'The request body must contain the following parameter: 'client_id''\"] = error.indexOf(\"The request body must contain the following parameter: 'client_id'\") !== -1;"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{resource}}",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{GetTokenURL}}",
+							"host": [
+								"{{GetTokenURL}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Verify Get Token URL with Invalid ClientId",
+			"description": "Verify Get Token URL with Invalid ClientId",
+			"item": [
+				{
+					"name": "Test.GetTokenwithInvalidClientId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var error = data.error_description;",
+									"tests [\"Verify error is 'Application with identifier '764da8c5-fbb7-4455-8f1e' was not found'\"] = error.indexOf(\"Application with identifier '764da8c5-fbb7-4455-8f1e' was not found\") !== -1;"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "764da8c5-fbb7-4455-8f1e",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{resource}}",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{GetTokenURL}}",
+							"host": [
+								"{{GetTokenURL}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Verify Get Token URL with Blank Resource",
+			"description": "Verify Get Token URL with Blank Resource",
+			"item": [
+				{
+					"name": "Test.GetTokenwithBlankResource",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var error = data.error_description;",
+									"tests [\"Verify error is 'The request body must contain the following parameter: 'resource''\"] = error.indexOf(\"The request body must contain the following parameter: 'resource'\") !== -1;"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{GetTokenURL}}",
+							"host": [
+								"{{GetTokenURL}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Verify Get Token URL with Invalid Resource",
+			"description": "Verify Get Token URL with Invalid Resource",
+			"item": [
+				{
+					"name": "Test.GetTokenwithInvalidResource",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var error = data.error_description;",
+									"tests [\"Verify error is 'The application named https://graph123.windows.net/ was not found'\"] = error.indexOf(\"The application named https://graph123.windows.net/ was not found\") !== -1;"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "https://graph123.windows.net/",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{GetTokenURL}}",
+							"host": [
+								"{{GetTokenURL}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Verify Add User to SF URL with Blank ClusterName",
+			"description": "Verify Add User to SF URL with Blank ClusterName",
+			"item": [
+				{
+					"name": "Test.addUserToSFwithBlankClusterName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var errorMessage = data.message;",
+									"tests[\"Code is 'Bad Request'\"] = code == \"Bad Request\" === true",
+									"tests [\"Verify error message is 'Blank clustername name is not allowed.'\"] = errorMessage == \"Blank clustername name is not allowed.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"token\", data.testParameters.token); ",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-For-addusertosf}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{AddUserToSFURL}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{AddUserToSFURL}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Verify Add User to SF URL with Invalid ClusterName",
+			"description": "Verify Add User to SF URL with Invalid ClusterName",
+			"item": [
+				{
+					"name": "Test.addUserToSFwithInvalidClusterName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 404\"] = responseCode.code === 404",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var errorMessage = data.message;",
+									"tests[\"Code is 'Not Found'\"] = code == \"NOT FOUND\" === true",
+									"tests [\"Verify error code is 'The cluster app does not exist'\"] = errorMessage == \"The cluster app does not exist\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"token\", data.testParameters.token); ",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-For-addusertosf}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{AddUserToSFURL}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{AddUserToSFURL}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Verify Add User to SF URL with Blank Useremail",
+			"description": "Verify Add User to SF URL with Blank Useremail",
+			"item": [
+				{
+					"name": "Test.addUserToSFwithBlankUseremail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var errorMessage = data.message;",
+									"tests[\"Code is 'Bad Request'\"] = code == \"Bad Request\" === true",
+									"tests [\"Verify error code is 'Blank useremail is not allowed.'\"] = errorMessage == \"Blank useremail is not allowed.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"token\", data.testParameters.token); ",
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-For-addusertosf}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{AddUserToSFURL}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{AddUserToSFURL}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Verify Add User to SF URL with Invalid Useremail",
+			"description": "Verify Add User to SF URL with Invalid Useremail",
+			"item": [
+				{
+					"name": "Test.addUserToSFwithInvalidUseremail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 404\"] = responseCode.code === 404",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var errorMessage = data.message;",
+									"tests[\"Code is 'Not Found'\"] = code == \"NOT FOUND\" === true",
+									"tests [\"Verify error code is 'The user does not exist'\"] = errorMessage == \"The user does not exist\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"token\", data.testParameters.token); ",
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-For-addusertosf}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{AddUserToSFURL}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{AddUserToSFURL}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Verify Add User to SF URL with Blank IsAdmin",
+			"description": "Verify Add User to SF URL with Blank IsAdmin",
+			"item": [
+				{
+					"name": "Test.addUserToSFwithBlankIsAdmin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var errorMessage = data.message;",
+									"tests[\"Code is 'Bad Request'\"] = code == \"Bad Request\" === true",
+									"tests [\"Verify error code is 'Blank isAdmin field is not allowed.'\"] = errorMessage == \"Blank isAdmin field is not allowed.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"token\", data.testParameters.token); ",
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-For-addusertosf}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{AddUserToSFURL}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{AddUserToSFURL}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Verify Add User to SF URL with Present User",
+			"description": "Verify Add User to SF URL with Present User",
+			"item": [
+				{
+					"name": "Test.addUserToSFwithPresentUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 409\"] = responseCode.code === 409",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"var errorMessage = data.message;",
+									"tests[\"Code is 'Conflict'\"] = code == \"Conflict\" === true",
+									"tests [\"Verify error code is 'The user is already present'\"] = errorMessage == \"The user is already present\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"token\", data.testParameters.token); ",
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-For-addusertosf}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{AddUserToSFURL}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{AddUserToSFURL}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Delete Cluster",
+			"description": "",
+			"item": [
+				{
+					"name": "Test.DeleteCluster",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 200\"] = responseCode.code === 200",
+									"var data = JSON.parse(responseBody);",
+									"var deleteReqStatus = data.Status;",
+									"tests[\"Delete Status not null\"] = deleteReqStatus !== null;",
+									"var jobId = data.Jobid;",
+									"tests[\"Delete Request Job Id not null\"] = jobId !== null;",
+									"postman.setGlobalVariable(\"svDeleteReqJobId\", jobId );"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-ForDeleteCluster}}"
+							}
+						],
+						"body": {},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Delete-MSFClusterMaster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Delete-MSFClusterMaster}}"
+							],
+							"query":[
+								{
+									"key": "CustomerSubscription",
+									"value": "{{subscriptionID}}"
+								},
+								{
+									"key": "CustomerTenantId",
+									"value": "{{tenantId}}"
+								},
+								{
+									"key": "RequesterName",
+									"value": ""
+								},
+								{
+									"key": "clusterName",
+									"value": "{{clusterName}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Delete Cluster with Blank Customer Subscription",
+			"description": "",
+			"item": [
+				{
+					"name": "Test.DeleteClusterWithBlankCustomerSubscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"message = data.message;",
+									"tests[\"Code is: 'Bad Request'\"] = code == \"Bad Request\" === true;",
+									"tests[\"Message is: 'Blank CustomerSubscription value is not allowed.'\"] = message == \"Blank CustomerSubscription value is not allowed.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-ForDeleteCluster}}"
+							}
+						],
+						"body": {},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Delete-MSFClusterMaster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Delete-MSFClusterMaster}}"
+							],
+							"query":[
+								{
+									"key": "CustomerSubscription",
+									"value": ""
+								},
+								{
+									"key": "CustomerTenantId",
+									"value": "{{tenantId}}"
+								},
+								{
+									"key": "RequesterName",
+									"value": ""
+								},
+								{
+									"key": "clusterName",
+									"value": "{{clusterName}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Delete Cluster with Invalid Customer Subscription",
+			"description": "",
+			"item": [
+				{
+					"name": "Test.DeleteClusterWithInvalidCustomerSubscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 404\"] = responseCode.code === 404",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"message = data.message;",
+									"tests[\"Code is: 'Not Found'\"] = code == \"Not Found\" === true;",
+									"var InvalidCustomerSubscription = pm.variables.get(\"InvalidCustomerSubscription\");",
+									"tests[\"Message is: 'No such CustomerSubscription exists.'\"] = message == \"No such CustomerSubscription \" + InvalidCustomerSubscription + \" exists.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"InvalidCustomerSubscription\", data.testParameters.InvalidCustomerSubscription); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-ForDeleteCluster}}"
+							}
+						],
+						"body": {},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Delete-MSFClusterMaster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Delete-MSFClusterMaster}}"
+							],
+							"query":[
+								{
+									"key": "CustomerSubscription",
+									"value": "{{InvalidCustomerSubscription}}"
+								},
+								{
+									"key": "CustomerTenantId",
+									"value": "{{tenantId}}"
+								},
+								{
+									"key": "RequesterName",
+									"value": ""
+								},
+								{
+									"key": "clusterName",
+									"value": "{{clusterName}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Delete Cluster with Balnk Customer TenantId",
+			"description": "",
+			"item": [
+				{
+					"name": "Test.DeleteClusterWithBalnkCustomerTenantId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"message = data.message;",
+									"tests[\"Code is: 'Bad Request'\"] = code == \"Bad Request\" === true;",
+									"tests[\"Message is: 'Blank CustomerTenantId value is not allowed.'\"] = message == \"Blank CustomerTenantId value is not allowed.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-ForDeleteCluster}}"
+							}
+						],
+						"body": {},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Delete-MSFClusterMaster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Delete-MSFClusterMaster}}"
+							],
+							"query":[
+								{
+									"key": "CustomerSubscription",
+									"value": "{{subscriptionID}}"
+								},
+								{
+									"key": "CustomerTenantId",
+									"value": ""
+								},
+								{
+									"key": "RequesterName",
+									"value": ""
+								},
+								{
+									"key": "clusterName",
+									"value": "{{clusterName}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Delete Cluster with Invalid Customer TenantId",
+			"description": "",
+			"item": [
+				{
+					"name": "Test.DeleteClusterWithInvalidCustomerTenantId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 404\"] = responseCode.code === 404",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"message = data.message;",
+									"tests[\"Code is: 'Not Found'\"] = code == \"Not Found\" === true;",
+									"var InvalidCustomerTenantId = pm.variables.get(\"InvalidCustomerTenantId\");",
+									"tests[\"Message is: 'No such CustomerTenantId exists.'\"] = message == \"No such CustomerTenantId \" + InvalidCustomerTenantId + \" exists.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName);",
+									"postman.setEnvironmentVariable(\"InvalidCustomerTenantId\", data.testParameters.InvalidCustomerTenantId); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-ForDeleteCluster}}"
+							}
+						],
+						"body": {},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Delete-MSFClusterMaster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Delete-MSFClusterMaster}}"
+							],
+							"query":[
+								{
+									"key": "CustomerSubscription",
+									"value": "{{subscriptionID}}"
+								},
+								{
+									"key": "CustomerTenantId",
+									"value": "{{InvalidCustomerTenantId}}"
+								},
+								{
+									"key": "RequesterName",
+									"value": ""
+								},
+								{
+									"key": "clusterName",
+									"value": "{{clusterName}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Delete Cluster with Blank ClusterName",
+			"description": "",
+			"item": [
+				{
+					"name": "Test.DeleteClusterWithBlankClusterName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"message = data.message;",
+									"tests[\"Code is: 'Bad Request'\"] = code == \"Bad Request\" === true;",
+									"tests[\"Message is: 'Blank clusterName value is not allowed.'\"] = message == \"Blank clusterName value is not allowed.\" === true;"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-ForDeleteCluster}}"
+							}
+						],
+						"body":{},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Delete-MSFClusterMaster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Delete-MSFClusterMaster}}"
+							],
+							"query":[
+								{
+									"key": "CustomerSubscription",
+									"value": "{{subscriptionID}}"
+								},
+								{
+									"key": "CustomerTenantId",
+									"value": "{{tenantId}}"
+								},
+								{
+									"key": "RequesterName",
+									"value": ""
+								},
+								{
+									"key": "clusterName",
+									"value": ""
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Delete Cluster with Invalid ClusterName",
+			"description": "",
+			"item": [
+				{
+					"name": "Test.DeleteClusterWithInvalidClusterName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 404\"] = responseCode.code === 404",
+									"var data = JSON.parse(responseBody);",
+									"var InvalidclusterName = pm.variables.get(\"InvalidclusterName\");",
+									"var code = data.code;",
+									"message = data.message;",
+									"tests[\"Code is: 'Not Found'\"] = code == \"Not Found\" === true;",
+									"tests[\"Message is: 'No such clusterName exists.'\"] = message == \"No such clusterName \" + InvalidclusterName + \" exists.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"InvalidclusterName\", data.testParameters.InvalidclusterName);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-ForDeleteCluster}}"
+							}
+						],
+						"body": {},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Delete-MSFClusterMaster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Delete-MSFClusterMaster}}"
+							],
+							"query":[
+								{
+									"key": "CustomerSubscription",
+									"value": "{{subscriptionID}}"
+								},
+								{
+									"key": "CustomerTenantId",
+									"value": "{{tenantId}}"
+								},
+								{
+									"key": "RequesterName",
+									"value": ""
+								},
+								{
+									"key": "clusterName",
+									"value": "{{InvalidclusterName}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		
+		{
+			"name": "Get-Delete Cluster Status",
+			"description": "",
+			"item": [
+				{
+					"name": "Test.DeleteClusterStatus",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 200\"] = responseCode.code === 200",
+									"var data = JSON.parse(responseBody);",
+									"var deleteReqStatus = data.Status;",
+									"tests[\"Status: \" + deleteReqStatus] = deleteReqStatus !== null;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"DeleteReqJobId\", data.testParameters.DeleteReqJobId); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-ForDeleteCluster}}"
+							}
+						],
+						"body": {},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Delete-MSFClusterMaster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Delete-MSFClusterMaster}}"
+							],
+							"query": [
+								{
+									"key": "jobId",
+									"value": "{{DeleteReqJobId}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Get-Delete Cluster Status with Blank JobId",
+			"description": "",
+			"item": [
+				{
+					"name": "Test.DeleteClusterStatusWithBlankJobId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 400\"] = responseCode.code === 400",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"message = data.message;",
+									"tests[\"Code is: 'Bad Request'\"] = code == \"Bad Request\" === true;",
+									"tests[\"Message is: 'Blank jobid value is not allowed.'\"] = message == \"Blank jobid value is not allowed.\" === true;"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-ForDeleteCluster}}"
+							}
+						],
+						"body": {},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Delete-MSFClusterMaster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Delete-MSFClusterMaster}}"
+							],
+							"query": [
+								{
+									"key": "jobId",
+									"value": ""
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Get-Delete Cluster Status with Invalid JobId",
+			"description": "",
+			"item": [
+				{
+					"name": "Test.DeleteClusterStatusWithInvalidJobId",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"status code is 404\"] = responseCode.code === 404",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"message = data.message;",
+									"tests[\"Code is: 'Not Found'\"] = code == \"Not Found\" === true;",
+									"tests[\"Message is: 'No such Job ID exists.'\"] = message == \"No such jobid exists.\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"InvalidJobId\", data.testParameters.InvalidJobId); "
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-ForDeleteCluster}}"
+							}
+						],
+						"body": {},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Delete-MSFClusterMaster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Delete-MSFClusterMaster}}"
+							],
+							"query": [
+								{
+									"key": "jobId",
+									"value": "{{InvalidJobId}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name":"Get-MSFClusterStatus with Blank ResourceGroup",
+			"description":"Get-MSFClusterStatus with Blank ResourceGroup",
+			"item":[
+				{
+					"name": "Test.Get-MSFClusterStatusWithBlankResourceGroup",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 400\"] = responseCode.code === 400;",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code",
+									"var message = data.message;",
+									"tests[\"Code is: 'Bad Request'\"] = code == \"Bad Request\" === true",
+									"tests[\"Message is: 'Please provide value for Resource Group'\"] = message == \"Please provide value for Resource Group. \" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"DeploymentId\", data.testParameters.DeploymentId); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "GET",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forGetClusterStatus}}"
+							}
+						],
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Get-MSFClusterStatus}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Get-MSFClusterStatus}}"
+							],
+							"query":[
+								{
+									"key": "resourcegroup",
+									"value": ""
+								},
+								{
+									"key": "deploymentname",
+									"value": "{{DeploymentId}}"
+								},
+								{
+									"key": "subscriptionid",
+									"value": "{{subscriptionid}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name":"Get-MSFClusterStatus with Invalid ResourceGroup",
+			"description":"Get-MSFClusterStatus with Invalid ResourceGroup",
+			"item":[
+				{
+					"name": "Test.Get-MSFClusterStatusWithInvalidResourceGroup",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 404\"] = responseCode.code === 404;",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code",
+									"var message = data.message;",
+									"tests[\"Code is: 'Not Found'\"] = code == \"Not Found\" === true",
+									"tests[\"Message is: 'No such resourcegroup or deploymentname exists'\"] = message == \"No such resourcegroup or deploymentname exists\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"InvalidResourceGroupName\", data.testParameters.InvalidResourceGroupName); ",
+									"postman.setEnvironmentVariable(\"DeploymentId\", data.testParameters.DeploymentId); "
+									
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "GET",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forGetClusterStatus}}"
+							}
+						],
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Get-MSFClusterStatus}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Get-MSFClusterStatus}}"
+							],
+							"query":[
+								{
+									"key": "resourcegroup",
+									"value": "{{InvalidResourceGroupName}}"
+								},
+								{
+									"key": "deploymentname",
+									"value": "{{DeploymentId}}"
+								},
+								{
+									"key": "subscriptionid",
+									"value": "{{subscriptionid}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		
+		{
+			"name":"Get-MSFClusterStatus with Blank DeploymentName",
+			"description":"Get-MSFClusterStatus with Blank DeploymentName",
+			"item":[
+				{
+					"name": "Test.Get-MSFClusterStatusWithBlankDeploymentName",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 400\"] = responseCode.code === 400;",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code",
+									"var message = data.message;",
+									"tests[\"Code is: 'Bad Request'\"] = code == \"Bad Request\" === true",
+									"tests[\"Message is: 'Please provide value for Deployment Name'\"] = message == \"Please provide value for Deployment Name. \" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"ResourceGroupName\", data.testParameters.ResourceGroupName); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "GET",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forGetClusterStatus}}"
+							}
+						],
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Get-MSFClusterStatus}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Get-MSFClusterStatus}}"
+							],
+							"query":[
+								{
+									"key": "resourcegroup",
+									"value": "{{ResourceGroupName}}"
+								},
+								{
+									"key": "deploymentname",
+									"value": ""
+								},
+								{
+									"key": "subscriptionid",
+									"value": "{{subscriptionid}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name":"Get-MSFClusterStatus with Invalid DeploymentName",
+			"description":"Get-MSFClusterStatus with Invalid DeploymentName",
+			"item":[
+				{
+					"name": "Test.Get-MSFClusterStatusWithInvalidDeploymentName",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 404\"] = responseCode.code === 404;",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code",
+									"var message = data.message;",
+									"tests[\"Code is: 'Not Found'\"] = code == \"Not Found\" === true",
+									"tests[\"Message is: 'No such resourcegroup or deploymentname exists'\"] = message == \"No such resourcegroup or deploymentname exists\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"ResourceGroupName\", data.testParameters.ResourceGroupName); ",
+									"postman.setEnvironmentVariable(\"InvalidDeploymentId\", data.testParameters.InvalidDeploymentId); "
+									
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "GET",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forGetClusterStatus}}"
+							}
+						],
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Get-MSFClusterStatus}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Get-MSFClusterStatus}}"
+							],
+							"query":[
+								{
+									"key": "resourcegroup",
+									"value": "{{ResourceGroupName}}"
+								},
+								{
+									"key": "deploymentname",
+									"value": "{{InvalidDeploymentId}}"
+								},
+								{
+									"key": "subscriptionid",
+									"value": "{{subscriptionid}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name":"Get-MSFClusterStatus with Blank SubscriptionId",
+			"description":"Get-MSFClusterStatus with Blank SubscriptionId",
+			"item":[
+				{
+					"name": "Test.Get-MSFClusterStatusWithBlankSubscriptionId",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 400\"] = responseCode.code === 400;",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code",
+									"var message = data.message;",
+									"tests[\"Code is: 'Bad Request'\"] = code == \"Bad Request\" === true",
+									"tests[\"Message is: 'Please provide value for SubscriptionID'\"] = message == \"Please provide value for SubscriptionID. \" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"ResourceGroupName\", data.testParameters.ResourceGroupName); ",
+									"postman.setEnvironmentVariable(\"DeploymentId\", data.testParameters.DeploymentId); "
+									
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "GET",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forGetClusterStatus}}"
+							}
+						],
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Get-MSFClusterStatus}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Get-MSFClusterStatus}}"
+							],
+							"query":[
+								{
+									"key": "resourcegroup",
+									"value": "{{ResourceGroupName}}"
+								},
+								{
+									"key": "deploymentname",
+									"value": "{{DeploymentId}}"
+								},
+								{
+									"key": "subscriptionid",
+									"value": ""
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name":"Get-MSFClusterStatus with Invalid SubscriptionId",
+			"description":"Get-MSFClusterStatus with Invalid SubscriptionId",
+			"item":[
+				{
+					"name": "Test.Get-MSFClusterStatusWithInvalidSubscriptionId",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 404\"] = responseCode.code === 404;",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code",
+									"var message = data.message;",
+									"tests[\"Code is: 'Not Found'\"] = code == \"Not Found\" === true",
+									"tests[\"Message is: 'No such subscriptionid exist'\"] = message == \"No such subscriptionid exist\" === true;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"ResourceGroupName\", data.testParameters.ResourceGroupName); ",
+									"postman.setEnvironmentVariable(\"DeploymentId\", data.testParameters.DeploymentId); ",
+									"postman.setEnvironmentVariable(\"InvalidSubscriptionId\", data.testParameters.InvalidSubscriptionId); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "GET",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forGetClusterStatus}}"
+							}
+						],
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Get-MSFClusterStatus}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Get-MSFClusterStatus}}"
+							],
+							"query":[
+								{
+									"key": "resourcegroup",
+									"value": "{{ResourceGroupName}}"
+								},
+								{
+									"key": "deploymentname",
+									"value": "{{DeploymentId}}"
+								},
+								{
+									"key": "subscriptionid",
+									"value": "{{InvalidSubscriptionId}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+
+		{
+			"name": "Change One Node Cluster",
+			"description": "Changing cluster with instanceCount, scalein, scaleout, minNode, maxNode, certificate details",
+			"item": 
+			[
+				{
+					"name": "Test.ChangeCluster",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 200\"] = responseCode.code === 200",
+									"    var data = JSON.parse(responseBody);",
+									"console.log(data);",
+									"if (responseCode.code == 200)",
+									"{",
+									"    var data = JSON.parse(responseBody);",
+									"console.log(data);",
+									"    var resourceGroupName = data.ResourceGroupName;",
+									"    var deploymentId = data.DeploymentID;",
+									"    tests[\"'Resource Group Name' not null \"] = resourceGroupName !== null;",
+									"    tests[\"'Deployment ID' not null \"] = deploymentId !== null;",
+									"    postman.setGlobalVariable(\"svResourceGroupName\", resourceGroupName );",
+									"    postman.setGlobalVariable(\"svDeploymentId\", deploymentId);",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"clusterName\", data.testParameters.clusterName); ",
+									"postman.setEnvironmentVariable(\"requestBody\", data.payload); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "PUT",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "{{Content-Type}}"
+							},
+							{
+								"key": "tenantId",
+								"value": "{{tenantId}}"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forCreateCluster}}"
+							},
+							{
+								"key": "subscriptionID",
+								"value": "{{subscriptionID}}"
+							},
+							{
+								"key": "requestorid",
+								"value": "ganesh.ransarje@atos.net",
+								"disabled": true
+							},
+							{
+								"key": "clusterType",
+								"value": "{{clusterType}}"
+							}
+						],
+						"body": 
+						{
+							"mode": "raw",
+							"raw": "{{requestBody}}"
+						},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{New-MSFCluster}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{New-MSFCluster}}"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+					
+				{
+					"name": "Test.Get-MSFClusterStatusForChangeCluster",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"tests[\"status code is 200\"] = responseCode.code === 200;",
+									"var data = JSON.parse(responseBody);",
+									"var code = data.code;",
+									"postman.setGlobalVariable(\"svCode\", code);",
+									"if(code == \"Succeeded\"){tests[\"Code is: Succeeded\"] = code == \"Succeeded\") === true;}",
+									"else if(code == \"Failed\")",
+									"{ ",
+									"    //postman.setNextRequest('null');",
+									"}",
+									"else if(code == \"Running\")",
+									"{ ",
+									"    console.log(\"waiting for cluster updation...\");",
+									"    postman.setNextRequest('Test.DelayForChangeCluster');",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"postman.setEnvironmentVariable(\"ResourceGroupName\", data.testParameters.ResourceGroupName); ",
+									"postman.setEnvironmentVariable(\"DeploymentId\", data.testParameters.DeploymentId); "
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "GET",
+						"header": 
+						[
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "x-functions-key",
+								"value": "{{x-functions-key-forGetClusterStatus}}"
+							}
+						],
+						"body": {},
+						"url": 
+						{
+							"raw": "{{Domain}}/api/{{Get-MSFClusterStatus}}",
+							"host": 
+							[
+								"{{Domain}}"
+							],
+							"path": 
+							[
+								"api",
+								"{{Get-MSFClusterStatus}}"
+							],
+							"query": [
+								{
+									"key": "resourcegroup",
+									"value": "{{ResourceGroupName}}"
+								},
+								{
+									"key": "deploymentname",
+									"value": "{{DeploymentId}}"
+								},
+								{
+									"key": "subscriptionid",
+									"value": "{{subscriptionid}}"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Test.DelayForChangeCluster",
+					"event": 
+					[
+						{
+							"listen": "test",
+							"script": 
+							{
+								"type": "text/javascript",
+								"exec": 
+								[
+									"var response = responseTime;",
+									"var seconds = response/1000;",
+									"var statusCode = pm.variables.get(\"svCode\");",
+									"if(statusCode !== \"Succeeded\" && statusCode !== \"Failed\"){postman.setNextRequest('Test.Get-MSFClusterStatusForChangeCluster');}"
+								]
+							}
+						}
+					],
+					"request": 
+					{
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": 
+						{
+							"raw": "{{Postman-Domain}}/delay/10",
+							"host": 
+							[
+								"{{Postman-Domain}}"
+							],
+							"path": 
+							[
+								"delay",
+								"10"
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]	
+		}
+
+		
+		
+	]
+}

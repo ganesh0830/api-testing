@@ -1,0 +1,12 @@
+{
+    "jira_username":"a671950",
+    "jira_password":"30April!990",
+    "jira_server":"https://msdevopsjira.fsc.atos-services.net",
+    "jira_projectid":"17300",
+    "jira_versionid":"16400",
+    "jira_reporter":"a671950",
+	"cycle_description":"REST API Automated test cycle",
+    "prefix_cycle_name":"MSF REST API Regression %%DATE%% %%TIME%%",
+    "HTMLResultsReport_Create" : true,
+    "HTMLResultsReport_Title" : "Test Results"
+}

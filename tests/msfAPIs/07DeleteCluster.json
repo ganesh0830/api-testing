@@ -1,0 +1,35 @@
+{
+    "environmentData": "./tests/msfAPIs/config/msf_api.postman_environment.json",
+    "collectionFile": "./tests/msfAPIs/config/msfAPI.postman_collection.json",
+    "groups": 
+    [
+        {
+        "groupName": "Delete Cluster",
+        "groupDescription":"Deleting the Cluster",
+        "groupType": "sequential",
+        "tests": 
+        [
+            
+            {
+                "testName": "Verify Delete cluster API",
+                "testDescription":"Getting the Token",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Delete Cluster",
+                "testParameters":{"clusterName":"{{svclusterName1}}"},
+                "testURL": "",
+                "testBody": {}
+            },
+
+            {
+                "testName": "Verify Get-Delete Cluster Status API",
+                "testDescription":"Getting the status of Delete Cluster",
+                "testExpectedResult":"successful",
+                "testCollectionFolder": "Get-Delete Cluster Status",
+                "testParameters":{"DeleteReqJobId":"{{svDeleteReqJobId}}"},
+                "testURL": "",
+                "testBody" : {}
+            }
+        ]
+        }
+    ]
+}
